@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeadBaseAI | Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <h2>Menu</h2>
+      <ul class="sidebar-menu">
+        <li><a href="../Dashboard/index.html" class="active">Dashboard</a></li>
+        <li><a href="../Data/index.html">Data</a></li>
+        <li><a href="../Affiliate/index.html">Affiliate</a></li>
+        <li><a href="../index.html">Logout</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <h1>Hi, <span id="username">Loading...</span></h1>
+      <div class="profile-section">
+        <div class="profile-box green-box">
+          <p>Daily Limit</p>
+          <span id="daily-limit">Loading...</span>
+        </div>
+        <div class="profile-box orange-box">
+          <p>Extra Limit</p>
+          <span id="extra-limit">Loading...</span>
+        </div>
+        <div class="profile-box blue-box">
+          <p>Total Affiliates</p>
+          <span id="total-affiliates">Loading...</span>
+        </div>
+      </div>
+      <p id="error-message" style="display: none; color: red;"></p>
+    </main>
+  </div>
+  <script src="dashboard.js"></script>
+  <footer class="modern-footer">
+    <div class="footer-content">
+      <p>&copy; 2025 LeadSparkAI. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="mailto:support@leadbaseai.in"><i class="fas fa-envelope"></i> support@leadbaseai.in</a>
+        <a href="tel:+918766334584"><i class="fas fa-phone"></i> +91 87663 34584</a>
+        <a href="https://www.instagram.com/leadbaseai/" target="_blank"><i class="fab fa-instagram"></i> @leadbaseai</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

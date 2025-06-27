@@ -1,0 +1,216 @@
+body {
+  margin: 0;
+  font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(180deg, #e6edff 0%, #f5f8ff 100%);
+  color: #1a1a1a;
+  scroll-behavior: smooth;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #00b4ff 0%, #005bbb 100%);
+  color: #fff;
+  padding: 40px 24px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.15);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  flex-shrink: 0;
+  transition: transform 0.3s ease-in-out;
+}
+
+.sidebar h2 {
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 700;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin: 0 0 48px 0;
+  text-align: center;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.02em;
+}
+
+.sidebar-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  flex-grow: 1;
+}
+
+.sidebar-menu li {
+  margin-bottom: 12px;
+}
+
+.sidebar-menu a {
+  display: flex;
+  align-items: center;
+  padding: 16px 24px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+  gap: 12px;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active {
+  background: rgba(255, 255, 255, 0.98);
+  color: #005bbb;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateX(4px);
+}
+
+.sidebar-menu a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #fff;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-menu a:hover::before,
+.sidebar-menu a.active::before {
+  transform: scaleY(1);
+}
+
+.main-content {
+  margin-left: 280px;
+  padding: 80px 64px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin-right: auto;
+}
+
+#affiliate-container h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 32px 0;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.affiliate-box {
+  background: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  max-width: 640px;
+  margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.affiliate-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+.affiliate-label {
+  font-size: 1.15rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.affiliate-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #d1d5db;
+  font-size: 1rem;
+  margin-bottom: 20px;
+  background: #fafafa;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+.affiliate-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.affiliate-btn {
+  width: 100%;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #00b4ff 0%, #005bbb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+}
+
+.affiliate-btn:hover {
+  background: linear-gradient(135deg, #00c4ff 0%, #007bff 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.affiliate-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 240px;
+    padding: 24px 16px;
+  }
+
+  .main-content {
+    margin-left: 240px;
+    padding: 40px 24px;
+  }
+
+  .affiliate-box {
+    padding: 24px;
+    max-width: 100%;
+  }
+
+  #affiliate-container h2 {
+    font-size: 1.75rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    box-shadow: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 24px 16px;
+  }
+
+  .affiliate-box {
+    padding: 20px;
+  }
+}

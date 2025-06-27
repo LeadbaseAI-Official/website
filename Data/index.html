@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeadBaseAI | Data Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <h2>Data Dashboard</h2>
+      <ul class="sidebar-menu">
+        <li><a href="../Dashboard/index.html">Dashboard</a></li>
+        <li><a href="../Data/index.html" class="active">Data</a></li>
+        <li><a href="../Affiliate/index.html">Affiliate</a></li>
+        <li><a href="../index.html">Logout</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <div id="country-selection" class="country-selection">
+        <h2>Select a Country</h2>
+        <div class="country-grid">
+          <button class="country-btn" data-country="India">India</button>
+          <button class="country-btn" data-country="USA">USA</button>
+          <button class="country-btn" data-country="UK">UK</button>
+          <button class="country-btn" data-country="Australia">Australia</button>
+          <button class="country-btn" data-country="UAE">UAE</button>
+          <button class="country-btn" data-country="Canada">Canada</button>
+        </div>
+      </div>
+
+      <div id="data-container" style="display: none;">
+        <div id="data-for-you">
+          <h2>AVAILABLE DATA (Total: 0)</h2>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>Select</th>
+                  <th>Name</th>
+                  <th>Phone</th>
+                  <th>Email</th>
+                  <th>Bio</th>
+                  <th>Facebook Link</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-controls">
+        <div class="pagination-controls">
+          <button id="prevPage">⟨ Prev</button>
+          <span id="pageInfo">Page 1</span>
+          <button id="nextPage">Next ⟩</button>
+        </div>
+        <button id="downloadBtn">Download Selected</button>
+      </div>
+    </main>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>

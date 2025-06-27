@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LeadBaseAI | Affiliate</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Menu</h2>
+    <ul class="sidebar-menu">
+      <li><a href="../Dashboard/index.html">Dashboard</a></li>
+      <li><a href="../Data/index.html">Data</a></li>
+      <li><a href="../Affiliate/index.html" class="active">Affiliate</a></li>
+      <li><a href="#" id="logoutLink">Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div id="affiliate-container" class="active">
+      <h2 style="margin-bottom: 24px;">AFFILIATE DASHBOARD</h2>
+      <div class="affiliate-box">
+        <p class="affiliate-label">Your unique affiliate link:</p>
+        <input type="text" id="refLink" class="affiliate-input" readonly />
+        <button id="generateBtn" class="affiliate-btn">Generate My Affiliate Link</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById("generateBtn").addEventListener("click", async () => {
+      const ip = await (await fetch("https://api64.ipify.org?format=json")).json();
+      const sanitizedIP = ip.ip.replace(/\./g, ""); // remove dots
+      const link = `https://leadbaseai.in/login.html?referal=${sanitizedIP}`;
+      document.getElementById("refLink").value = link;
+    });
+  </script>
+</body>
+</html>

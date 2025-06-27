@@ -1,0 +1,120 @@
+/* Base Layout */
+body {
+  margin: 0;
+  font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  background: linear-gradient(180deg, #e6edff 0%, #f5f8ff 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Login Container */
+.login-container {
+  display: flex;
+  width: 100%;
+  max-width: 400px;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+/* Login Logo */
+.login-logo {
+  width: 120px;
+  height: auto;
+  margin: 0 0 20px;
+}
+
+/* Login Card */
+.login-card {
+  background: rgba(255, 255, 255, 0.85);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0, 123, 255, 0.2);
+  width: 100%;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card h2 {
+  color: #1e3a8a;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+
+.login-card input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 0.75rem;
+  background: linear-gradient(135deg, #00b4ff 0%, #007bff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card button:hover {
+  background: linear-gradient(135deg, #33c3ff 0%, #3391ff 100%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.error-message {
+  color: #dc2626;
+  text-align: center;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  display: none;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .login-container {
+    padding: 20px;
+  }
+
+  .login-logo {
+    width: 100px;
+  }
+
+  .login-card {
+    padding: 1.5rem;
+  }
+
+  .login-card h2 {
+    font-size: 1.5rem;
+  }
+}

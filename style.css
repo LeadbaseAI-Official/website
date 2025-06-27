@@ -1,0 +1,808 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 50%, #e6f3ff 100%);
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Animated Background Particles */
+.bg-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(0, 123, 255, 0.1);
+    border-radius: 50%;
+    animation: float 20s infinite linear;
+}
+
+.particle:nth-child(1) {
+    width: 10px;
+    height: 10px;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    width: 15px;
+    height: 15px;
+    left: 20%;
+    animation-delay: 2s;
+}
+
+.particle:nth-child(3) {
+    width: 8px;
+    height: 8px;
+    left: 30%;
+    animation-delay: 4s;
+}
+
+.particle:nth-child(4) {
+    width: 12px;
+    height: 12px;
+    left: 40%;
+    animation-delay: 6s;
+}
+
+.particle:nth-child(5) {
+    width: 20px;
+    height: 20px;
+    left: 50%;
+    animation-delay: 8s;
+}
+
+.particle:nth-child(6) {
+    width: 6px;
+    height: 6px;
+    left: 60%;
+    animation-delay: 10s;
+}
+
+.particle:nth-child(7) {
+    width: 18px;
+    height: 18px;
+    left: 70%;
+    animation-delay: 12s;
+}
+
+.particle:nth-child(8) {
+    width: 14px;
+    height: 14px;
+    left: 80%;
+    animation-delay: 14s;
+}
+
+.particle:nth-child(9) {
+    width: 10px;
+    height: 10px;
+    left: 90%;
+    animation-delay: 16s;
+}
+
+header {
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    animation: slideDown 1s ease-out;
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+}
+
+header h1 {
+    font-size: 1.8rem;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+nav {
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+nav a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: rgb(255, 255, 255);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+nav a:hover::before {
+    left: 0;
+}
+
+nav a:hover {
+    color: #000000;
+    transform: translateY(-2px);
+}
+
+.hero {
+    background: url('https://images.unsplash.com/photo-1603573359926-c3f9332f4e3d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center/cover;
+    color: rgb(0, 0, 0);
+    text-align: center;
+    padding: 100px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #e0e8ff, #ffffff);
+    z-index: 0;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.hero h2 {
+    font-size: 3rem;
+    animation: slideInBounce 1.5s ease-out;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin: 1rem 0 2rem;
+    animation: fadeInUp 2s ease-out 0.5s both;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.hero .cta {
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    color: #000;
+    font-weight: bold;
+    font-size: 1.2rem;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    animation: pulseGlow 2s infinite, bounceIn 1.5s ease-out 1s both;
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.hero .cta::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    animation: buttonShimmer 3s infinite;
+}
+
+.hero .cta:hover {
+    transform: scale(1.1) translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255, 215, 0, 0.6);
+}
+
+.features,
+.how-it-works {
+    padding: 60px 20px;
+    text-align: center;
+    position: relative;
+}
+
+.features h3,
+.how-it-works h3 {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #007bff;
+    animation: fadeInScale 1s ease-out;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    transition: color 0.3s ease;
+}
+
+.features h3:hover,
+.how-it-works h3:hover {
+    color: #000000;
+}
+
+.features .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.card {
+    background: linear-gradient(135deg, #eaf4ff 0%, #ddeeff 100%);
+    padding: 30px 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    animation: cardFloat 1s ease-out;
+    border: 2px solid transparent;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, rgba(0, 123, 255, 0.1), rgba(0, 198, 255, 0.1));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.card:hover::before {
+    opacity: 1;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.05);
+    box-shadow: 0 20px 40px rgba(0, 123, 255, 0.2);
+    border-color: #007bff;
+}
+
+.card h4 {
+    color: #0047b3;
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+    animation: slideInLeft 1s ease-out;
+    transition: color 0.3s ease;
+}
+
+.card:hover h4 {
+    color: #000000;
+}
+
+.card p {
+    animation: slideInRight 1s ease-out 0.2s both;
+    line-height: 1.6;
+    color: #333333;
+    transition: color 0.3s ease;
+}
+
+.card:hover p {
+    color: #000000;
+}
+
+.how-it-works ol {
+    list-style: none;
+    max-width: 800px;
+    margin: auto;
+    counter-reset: step-counter;
+}
+
+.how-it-works li {
+    counter-increment: step-counter;
+    position: relative;
+    padding: 20px 0 20px 80px;
+    margin: 20px 0;
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.05) 0%, rgba(0, 198, 255, 0.05) 100%);
+    border-radius: 10px;
+    animation: slideInAlternate 1s ease-out;
+    transition: all 0.3s ease;
+    color: #333333;
+}
+
+.how-it-works li:hover {
+    transform: translateX(10px);
+    background: linear-gradient(135deg, rgba(0, 123, 255, 0.1) 0%, rgba(0, 198, 255, 0.1) 100%);
+    color: #000000;
+}
+
+.how-it-works li::before {
+    content: counter(step-counter);
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(45deg, #007bff, #00c6ff);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    animation: bounce 2s infinite;
+}
+
+.cta-section {
+    background: linear-gradient(135deg, #007bff 0%, #00c6ff 100%);
+    color: white;
+    text-align: center;
+    padding: 60px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+    animation: backgroundMove 20s linear infinite;
+}
+
+.cta-section h3 {
+    animation: zoomIn 1s ease-out;
+    margin-bottom: 1rem;
+    transition: color 0.3s ease;
+}
+
+.cta-section h3:hover {
+    color: #000000;
+}
+
+.cta-section p {
+    animation: fadeIn 1.5s ease-out 0.5s both;
+    margin-bottom: 2rem;
+    transition: color 0.3s ease;
+}
+
+.cta-section p:hover {
+    color: #000000;
+}
+
+.cta-section a.cta {
+    background: linear-gradient(45deg, white, #f0f8ff);
+    color: #007bff;
+    padding: 16px 40px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    border-radius: 50px;
+    text-decoration: none;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+    animation: megaPulse 2s infinite, scaleIn 1s ease-out 1s both;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: all 0.4s ease;
+}
+
+.cta-section a.cta::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: linear-gradient(45deg, #ffd700, #ffed4e);
+    border-radius: 50%;
+    transition: all 0.4s ease;
+    transform: translate(-50%, -50%);
+}
+
+.cta-section a.cta:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.cta-section a.cta:hover {
+    color: black;
+    transform: scale(1.1) translateY(-5px);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.4);
+}
+
+.cta-section a.cta span {
+    position: relative;
+    z-index: 1;
+}
+
+.modern-footer {
+    background: linear-gradient(90deg, #007bff, #00c6ff); /* Matching header/cta-section gradient */
+    color: white;
+    text-align: center;
+    padding: 2.5rem 2rem; /* Increased padding for more space */
+    font-size: 0.95rem; /* Slightly larger font */
+    animation: slideUp 1s ease-out;
+    position: relative;
+    overflow: hidden;
+    border-top: 5px solid #ffd700; /* A subtle top border for separation, matching CTA gold */
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem; /* Space between paragraphs */
+}
+
+.modern-footer .footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem; /* Space between copyright and links */
+}
+
+.modern-footer p {
+    margin: 0; /* Remove default paragraph margin */
+    line-height: 1.5;
+}
+
+.modern-footer .footer-links {
+    display: flex;
+    flex-wrap: wrap; /* Allow links to wrap on smaller screens */
+    justify-content: center;
+    gap: 1.5rem; /* Space between links */
+}
+
+.modern-footer a {
+    color: white; /* Ensure links are visible */
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease, transform 0.3s ease;
+    display: flex; /* Align icon and text */
+    align-items: center;
+    gap: 0.5rem; /* Space between icon and text */
+}
+
+.modern-footer a:hover {
+    color: #ffd700; /* Gold color on hover for links */
+    transform: translateY(-3px); /* Slight lift effect */
+}
+
+.modern-footer a i {
+    font-size: 1.1rem; /* Icon size */
+}
+
+/* The ::before pseudo-element for the gradient shift is still relevant */
+.modern-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ffd700, #ffed4e, #ffd700); /* Gold gradient for the top line */
+    animation: gradientShift 3s ease-in-out infinite;
+}
+
+/* Keyframe Animations */
+@keyframes float {
+    0% {
+    transform: translateY(100vh) rotate(0deg);
+    }
+
+    100% {
+    transform: translateY(-100px) rotate(360deg);
+    }
+}
+
+@keyframes shimmer {
+    0% {
+    left: -100%;
+    }
+
+    100% {
+    left: 100%;
+    }
+}
+
+@keyframes glow {
+    0% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    100% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);
+    }
+}
+
+@keyframes slideDown {
+    from {
+    transform: translateY(-100%);
+    }
+
+    to {
+    transform: translateY(0);
+    }
+}
+
+@keyframes slideInBounce {
+    0% {
+    transform: translateY(-100px);
+    opacity: 0;
+    }
+
+    60% {
+    transform: translateY(10px);
+    opacity: 1;
+    }
+
+    100% {
+    transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+    transform: translateY(30px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateY(0);
+    opacity: 1;
+    }
+}
+
+@keyframes pulseGlow {
+
+    0%,
+    100% {
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    }
+
+    50% {
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 215, 0, 0.6);
+    }
+}
+
+@keyframes buttonShimmer {
+    0% {
+    left: -100%;
+    }
+
+    50% {
+    left: 100%;
+    }
+
+    100% {
+    left: 100%;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+    transform: scale(0.3);
+    opacity: 0;
+    }
+
+    50% {
+    transform: scale(1.05);
+    }
+
+    70% {
+    transform: scale(0.9);
+    }
+
+    100% {
+    transform: scale(1);
+    opacity: 1;
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+    transform: scale(0.8);
+    opacity: 0;
+    }
+
+    to {
+    transform: scale(1);
+    opacity: 1;
+    }
+}
+
+@keyframes cardFloat {
+    from {
+    transform: translateY(50px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateY(0);
+    opacity: 1;
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+    transform: translateX(-50px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateX(0);
+    opacity: 1;
+    }
+}
+
+@keyframes slideInRight {
+    from {
+    transform: translateX(50px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateX(0);
+    opacity: 1;
+    }
+}
+
+@keyframes slideInAlternate {
+    from {
+    transform: translateX(-30px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateX(0);
+    opacity: 1;
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+    transform: translateY(-50%);
+    }
+
+    40% {
+    transform: translateY(-60%);
+    }
+
+    60% {
+    transform: translateY(-55%);
+    }
+}
+
+@keyframes backgroundMove {
+    0% {
+    transform: translateX(0) translateY(0);
+    }
+
+    100% {
+    transform: translateX(50px) translateY(50px);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+    transform: scale(0.5);
+    opacity: 0;
+    }
+
+    to {
+    transform: scale(1);
+    opacity: 1;
+    }
+}
+
+@keyframes megaPulse {
+
+    0%,
+    100% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    50% {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), 0 0 50px rgba(255, 255, 255, 0.5);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+    transform: scale(0);
+    opacity: 0;
+    }
+
+    to {
+    transform: scale(1);
+    opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+    transform: translateY(50px);
+    opacity: 0;
+    }
+
+    to {
+    transform: translateY(0);
+    opacity: 1;
+    }
+}
+
+@keyframes gradientShift {
+
+    0%,
+    100% {
+    background-position: 0% 50%;
+    }
+
+    50% {
+    background-position: 100% 50%;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+    opacity: 0;
+    }
+
+    to {
+    opacity: 1;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .hero h2 {
+    font-size: 2.2rem;
+    }
+
+    .features .grid {
+    grid-template-columns: 1fr;
+    }
+
+    .how-it-works li {
+    padding-left: 60px;
+    }
+}
+
+/* Hide scrollbar but keep functionality */
+html {
+scrollbar-width: none; /* Firefox */
+-ms-overflow-style: none; /* IE/Edge */
+}
+
+html::-webkit-scrollbar {
+display: none; /* Chrome, Safari */
+}

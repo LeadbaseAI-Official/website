@@ -1,0 +1,80 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: #e9f5ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.quiz-popup {
+  background: white;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 30px rgba(0, 123, 255, 0.15);
+  max-width: 480px;
+  width: 90%;
+  animation: popupFade 0.4s ease-in-out;
+  text-align: center;
+}
+
+.quiz-popup h2 {
+  color: #007bff;
+  margin-bottom: 1.5rem;
+}
+
+#question-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.option-btn {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  padding: 0.75rem;
+  border: 2px solid #007bff;
+  border-radius: 10px;
+  background: white;
+  color: #007bff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.option-btn:hover,
+.option-btn.selected {
+  background: #007bff;
+  color: white;
+}
+
+#nextBtn {
+  margin-top: 1.5rem;
+  width: 100%;
+  padding: 0.75rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: 0.2s;
+}
+
+#nextBtn:enabled {
+  opacity: 1;
+}
+
+@keyframes popupFade {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
