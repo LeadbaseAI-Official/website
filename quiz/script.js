@@ -3,7 +3,7 @@ const API_URL = "https://api.leadbaseai.in";
 const questions = [
   {
     text: 'What best describes your current business type?',
-    options: ['A. SaaParents Product', 'B. Agency/Service', 'C. Info Product', 'D. Not Started']
+    options: ['A. Pvt LTD', 'B. Agency/Service', 'C. Just Started', 'D. Small Scale']
   },
   {
     text: 'How many leads do you generate monthly?',
