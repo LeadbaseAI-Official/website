@@ -1116,3 +1116,37 @@
   }
 }
 
+/* Hidden by default (for mobile) */
+#nav-menu {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: #007bff;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+}
+
+/* Show on toggle */
+#nav-menu.show {
+  display: flex;
+}
+
+/* Only collapse on smaller screens */
+@media (min-width: 768px) {
+  #nav-menu {
+    display: flex !important;
+    flex-direction: row;
+    background-color: transparent;
+    padding: 0;
+    margin-top: 0;
+  }
+
+  #nav-menu.show {
+    display: flex !important;
+  }
+
+  .hamburger {
+    display: none;
+  }
+}
