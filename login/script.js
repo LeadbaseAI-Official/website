@@ -67,7 +67,7 @@ async function handleLogin(event) {
         ref_source: localStorage.getItem("ref_source") || null // Store ref_source
       };
       localStorage.setItem('userData', JSON.stringify(userData));
-      window.location.href = 'quiz.html';
+      window.location.href = '../quiz/index.html';
     }
   } catch (err) {
     console.error('Login error:', err);
