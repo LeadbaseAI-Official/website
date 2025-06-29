@@ -28,15 +28,19 @@
     <div class="particle"></div>
   </div>
 
-  <header>
-    <h1>LeadBaseAI</h1>
+<header>
+  <h1>LeadBaseAI</h1>
+  <div class="hamburger" onclick="toggleMenu()">
+    <i class="fas fa-bars"></i>
+  </div>
+  <nav id="nav-menu">
+    <a href="#features">Features</a>
+    <a href="#how">How It Works</a>
+    <a href="#get-started">Start</a>
+  </nav>
+</header>
 
-    <nav>
-      <a href="#features">Features</a>
-      <a href="#how">How It Works</a>
-      <a href="#get-started">Start</a>
-    </nav>
-  </header>
+
 
   <section class="hero">
     <div class="container">
@@ -91,6 +95,12 @@
       </div>
     </div>
   </footer>
+  <script>
+  function toggleMenu() {
+    document.getElementById('nav-menu').classList.toggle('show');
+  }
+</script>
+
 </body>
 
 </html>
