@@ -51,7 +51,7 @@ async function handleLogin(event) {
         affiliates: parseInt(row.affiliate) || 0
       };
       localStorage.setItem('userData', JSON.stringify(userData));
-      window.location.href = 'dashboard.html';
+      window.location.href = '../Dashboard/index.html';
     } else if (result.ipExists && !result.emailExists) {
       showError('Your one account already exists, please login with that.');
     } else {
