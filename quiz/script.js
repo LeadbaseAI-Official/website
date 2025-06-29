@@ -106,7 +106,7 @@ async function submitAnswers() {
     user.verified = true;
     localStorage.setItem('userData', JSON.stringify(user));
     alert('Thanks! Your answers were submitted successfully.');
-    window.location.href = '../dashboard/index.html';
+    window.location.href = '../Dashboard/index.html';
   } catch (err) {
     console.error('Submit error:', err);
     alert('Submission failed. Please check your connection and try again.');
