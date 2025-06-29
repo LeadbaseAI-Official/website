@@ -12,6 +12,24 @@
   <link rel="icon" type="image/png" sizes="32x32" href="icons/32-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icons/16-16.png">
   <link rel="icon" type="image/png" sizes="192x192" href="icons/192-192.png">
+
+  <script>
+document.addEventListener('DOMContentLoaded', () => {
+  const hamburger = document.querySelector('.hamburger');
+  const navMenu = document.querySelector('#nav-menu');
+  console.log('Hamburger:', hamburger);
+  console.log('Nav Menu:', navMenu);
+  if (hamburger && navMenu) {
+    hamburger.addEventListener('click', () => {
+      console.log('Hamburger clicked');
+      navMenu.classList.toggle('show');
+      console.log('Show class:', navMenu.classList.contains('show'));
+    });
+  } else {
+    console.log('Elements not found');
+  }
+});
+</script>
 </head>
 
 <body>
@@ -30,16 +48,15 @@
 
 <header>
   <h1>LeadBaseAI</h1>
-  <div class="hamburger" onclick="toggleMenu()">
+  <div class="hamburger" role="button" aria-label="Toggle navigation" aria-expanded="false">
     <i class="fas fa-bars"></i>
   </div>
-  <nav id="nav-menu">
+  <nav class="nav-menu" id="nav-menu">
     <a href="#features">Features</a>
     <a href="#how">How It Works</a>
     <a href="#get-started">Start</a>
   </nav>
 </header>
-
 
 
   <section class="hero">
@@ -95,11 +112,8 @@
       </div>
     </div>
   </footer>
-  <script>
-  function toggleMenu() {
-    document.getElementById('nav-menu').classList.toggle('show');
-  }
-</script>
+<!-- Add this at the bottom of your index.html, just before the closing </body> tag -->
+
 
 </body>
 
