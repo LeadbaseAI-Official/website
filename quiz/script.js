@@ -77,7 +77,7 @@ async function submitAnswers() {
   
   if (!user.email || !user.ip || !user.name || !user.phone) {
     alert('Missing user info — please log in again.');
-    window.location.href = 'index.html';
+    window.location.href = '../index.html';
     return;
   }
 
@@ -106,7 +106,7 @@ async function submitAnswers() {
     user.verified = true;
     localStorage.setItem('userData', JSON.stringify(user));
     alert('Thanks! Your answers were submitted successfully.');
-    window.location.href = 'dashboard.html';
+    window.location.href = '../dashboard/index.html';
   } catch (err) {
     console.error('Submit error:', err);
     alert('Submission failed. Please check your connection and try again.');
