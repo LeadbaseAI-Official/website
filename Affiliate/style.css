@@ -185,41 +185,153 @@ body {
   }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .sidebar {
     width: 240px;
-    padding: 24px 16px;
+    padding: 32px 20px;
   }
 
   .main-content {
     margin-left: 240px;
-    padding: 40px 24px;
+    padding: 60px 48px;
+  }
+
+  .affiliate-box {
+    max-width: 580px;
+    padding: 32px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    padding: 20px;
+    box-shadow: none;
+  }
+
+  .sidebar h2 {
+    font-size: 1.3rem;
+    padding: 16px 20px;
+    margin-bottom: 32px;
+  }
+
+  .sidebar-menu a {
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 32px 24px;
   }
 
   .affiliate-box {
     padding: 24px;
     max-width: 100%;
+    border-radius: 12px;
   }
 
   #affiliate-container h2 {
-    font-size: 1.75rem;
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+  }
+
+  .affiliate-label {
+    font-size: 1rem;
+  }
+
+  .affiliate-input {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+    margin-bottom: 16px;
+  }
+
+  .affiliate-btn {
+    padding: 12px 28px;
+    font-size: 1rem;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 480px) {
   .sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    box-shadow: none;
+    padding: 16px;
+  }
+
+  .sidebar h2 {
+    font-size: 1.2rem;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar-menu a {
+    padding: 10px 16px;
+    font-size: 0.95rem;
   }
 
   .main-content {
-    margin-left: 0;
     padding: 24px 16px;
   }
 
   .affiliate-box {
     padding: 20px;
+    border-radius: 10px;
   }
+
+  #affiliate-container h2 {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+
+  .affiliate-label {
+    font-size: 0.95rem;
+    margin-bottom: 12px;
+  }
+
+  .affiliate-input {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    border-radius: 8px;
+  }
+
+  .affiliate-btn {
+    padding: 10px 24px;
+    font-size: 0.95rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .main-content {
+    padding: 20px 12px;
+  }
+
+  .affiliate-box {
+    padding: 16px;
+  }
+
+  #affiliate-container h2 {
+    font-size: 1.2rem;
+  }
+
+  .affiliate-label {
+    font-size: 0.9rem;
+  }
+
+  .affiliate-input,
+  .affiliate-btn {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+}
+
+.top-right-logo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: auto;
+  z-index: 1001;
 }

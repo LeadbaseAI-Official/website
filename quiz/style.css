@@ -1,81 +1,207 @@
 body {
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #e9f5ff;
+  font-family: 'Segoe UI', 'Inter', 'Roboto', system-ui, sans-serif;
+  background: linear-gradient(180deg, #e6edff 0%, #f5f8ff 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100vh;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .quiz-popup {
-  background: white;
+  background: rgba(255, 255, 255, 0.95);
   padding: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 12px 30px rgba(0, 123, 255, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 15px 35px rgba(0, 123, 255, 0.2);
   max-width: 480px;
-  width: 90%;
-  animation: popupFade 0.4s ease-in-out;
+  width: 100%;
+  animation: popupFade 0.5s ease-in-out;
   text-align: center;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .quiz-popup h2 {
   color: #007bff;
   margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 700;
 }
 
 #question-text {
   font-size: 1.1rem;
   font-weight: 500;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+  color: #333;
 }
 
 .option-btn {
   display: block;
   width: 100%;
   margin: 0.5rem 0;
-  padding: 0.75rem;
+  padding: 0.75rem 1rem;
   border: 2px solid #007bff;
-  border-radius: 10px;
+  border-radius: 12px;
   background: white;
   color: #007bff;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.option-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.5s ease;
+}
+
+.option-btn:hover::before {
+  left: 100%;
 }
 
 .option-btn:hover,
 .option-btn.selected {
-  background: #007bff;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.3);
 }
 
 #nextBtn {
   margin-top: 1.5rem;
   width: 100%;
-  padding: 0.75rem;
-  background: #007bff;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
   opacity: 0.6;
-  transition: 0.2s;
+  transition: all 0.3s ease;
 }
 
 #nextBtn:enabled {
   opacity: 1;
 }
 
+#nextBtn:enabled:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 123, 255, 0.4);
+}
+
 @keyframes popupFade {
   from {
     opacity: 0;
-    transform: scale(0.95);
+    transform: scale(0.9) translateY(20px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  body {
+    padding: 15px;
+  }
+
+  .quiz-popup {
+    padding: 1.5rem;
+    border-radius: 16px;
+    max-width: 100%;
+  }
+
+  .quiz-popup h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+
+  #question-text {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .option-btn {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+
+  #nextBtn {
+    padding: 0.7rem 0.8rem;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 10px;
+  }
+
+  .quiz-popup {
+    padding: 1.2rem;
+    border-radius: 12px;
+  }
+
+  .quiz-popup h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  #question-text {
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+  }
+
+  .option-btn {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    margin: 0.4rem 0;
+    border-radius: 8px;
+  }
+
+  #nextBtn {
+    padding: 0.6rem 0.7rem;
+    font-size: 0.9rem;
+    margin-top: 1.2rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 360px) {
+  .quiz-popup {
+    padding: 1rem;
+  }
+
+  .quiz-popup h2 {
+    font-size: 1.2rem;
+  }
+
+  #question-text {
+    font-size: 0.9rem;
+  }
+
+  .option-btn,
+  #nextBtn {
+    padding: 0.5rem 0.6rem;
+    font-size: 0.85rem;
   }
 }
 
@@ -83,7 +209,7 @@ body {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 50px; /* Adjust size as needed */
+  width: 50px;
   height: auto;
-  z-index: 1001; /* Ensure it's above other content */
+  z-index: 1001;
 }

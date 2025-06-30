@@ -289,7 +289,7 @@ tr.selected {
 
 .pagination-controls button:hover {
   background: linear-gradient(135deg, #33c3ff 0%, #3391ff 100%);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0 crore);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .pagination-controls #pageInfo {
@@ -344,6 +344,22 @@ tr.selected {
 
   .country-grid {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .country-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 0.9rem;
   }
 }
 
@@ -356,28 +372,69 @@ tr.selected {
     width: 100%;
     height: auto;
     position: relative;
-    padding: 24px;
+    padding: 20px;
     box-shadow: none;
     min-height: auto;
   }
 
+  .sidebar h2 {
+    font-size: 1.2rem;
+    padding: 12px 20px;
+    margin-bottom: 24px;
+  }
+
+  .sidebar-menu a {
+    padding: 12px 16px;
+    font-size: 1rem;
+  }
+
   .main-content {
     margin-left: 0;
-    padding: 32px 24px;
-    padding-bottom: 180px;
+    padding: 24px 20px;
+    padding-bottom: 200px;
   }
 
   .footer-controls {
     left: 0;
-    padding: 12px 24px;
+    padding: 12px 20px;
+    gap: 16px;
   }
 
   #data-container, .country-selection {
-    padding: 24px;
+    padding: 20px;
+    border-radius: 16px;
   }
 
   #data-for-you h2, .country-selection h2 {
     font-size: 1.6rem;
+  }
+
+  .country-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+  }
+
+  .country-btn {
+    padding: 10px 16px;
+    font-size: 0.95rem;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: 8px;
+  }
+
+  th, td {
+    padding: 8px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
   }
 
   .pagination-controls {
@@ -387,7 +444,7 @@ tr.selected {
 
   .pagination-controls button {
     padding: 8px 16px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   #downloadBtn {
@@ -399,17 +456,114 @@ tr.selected {
   .sidebar-logo {
     width: 100px;
   }
+}
+
+@media (max-width: 480px) {
+  .sidebar {
+    padding: 16px;
+  }
+
+  .sidebar h2 {
+    font-size: 1.1rem;
+    padding: 10px 16px;
+    margin-bottom: 20px;
+  }
+
+  .sidebar-menu a {
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .main-content {
+    padding: 20px 15px;
+    padding-bottom: 220px;
+  }
+
+  .footer-controls {
+    padding: 10px 15px;
+    gap: 12px;
+  }
+
+  #data-container, .country-selection {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  #data-for-you h2, .country-selection h2 {
+    font-size: 1.4rem;
+  }
 
   .country-grid {
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
   }
 
-  .top-right-logo {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 50px; /* Adjust size as needed */
-    height: auto;
-    z-index: 1001; /* Ensure it's above other content */
+  .country-btn {
+    padding: 8px 12px;
+    font-size: 0.9rem;
   }
+
+  th, td {
+    padding: 6px;
+    font-size: 0.8rem;
+  }
+
+  .pagination-controls button {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
+  #downloadBtn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .main-content {
+    padding: 15px 10px;
+  }
+
+  #data-for-you h2, .country-selection h2 {
+    font-size: 1.2rem;
+  }
+
+  .country-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 8px;
+  }
+
+  .country-btn {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  th, td {
+    padding: 4px;
+    font-size: 0.75rem;
+  }
+
+  .pagination-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pagination-controls button {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+
+  #downloadBtn {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+  }
+}
+
+.top-right-logo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: auto;
+  z-index: 1001;
 }

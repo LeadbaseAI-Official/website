@@ -102,8 +102,13 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  body {
+    padding: 10px;
+  }
+
   .login-container {
-    padding: 20px;
+    padding: 15px;
+    max-width: 100%;
   }
 
   .login-logo {
@@ -112,18 +117,83 @@ body {
 
   .login-card {
     padding: 1.5rem;
+    border-radius: 16px;
   }
 
   .login-card h2 {
     font-size: 1.5rem;
+    margin-bottom: 1.2rem;
   }
 
-  .top-right-logo {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 50px; /* Adjust size as needed */
-    height: auto;
-    z-index: 1001; /* Ensure it's above other content */
+  .login-card input {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 8px;
   }
+
+  .login-card button {
+    padding: 0.8rem;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    padding: 5px;
+  }
+
+  .login-container {
+    padding: 10px;
+  }
+
+  .login-card {
+    padding: 1.2rem;
+    border-radius: 12px;
+  }
+
+  .login-card h2 {
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+  }
+
+  .login-card input {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+    margin-bottom: 0.8rem;
+  }
+
+  .login-card button {
+    padding: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .error-message {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .login-card {
+    padding: 1rem;
+  }
+
+  .login-card h2 {
+    font-size: 1.2rem;
+  }
+
+  .login-card input,
+  .login-card button {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+}
+
+.top-right-logo {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 50px;
+  height: auto;
+  z-index: 1001;
 }
