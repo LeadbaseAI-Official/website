@@ -1,8 +1,4 @@
-import { openDB, saveUserLimits, clearAllData } from '../utils/indexedDB.js';
-
-document.addEventListener("DOMContentLoaded", async () => {
-  await openDB(); // Ensure IndexedDB is open
-
+document.addEventListener("DOMContentLoaded", () => {
   const generateBtn = document.getElementById("generateBtn");
   const refLinkInput = document.getElementById("refLink");
   const copyBtn = document.getElementById("copyBtn");
@@ -34,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       e.preventDefault(); // Prevent immediate navigation
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
       await sendLogoutData(userData); // Send user data to server
-      await clearStorage(); // Clear localStorage and IndexedDB
+      clearStorage(); // Clear localStorage and sessionStorage
       window.location.href = '../index.html'; // Redirect to index.html
     });
   }
@@ -43,7 +39,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 // Function to send user data to server on logout
 async function sendLogoutData(userData) {
   try {
-    await saveUserLimits(userData); // Save current state to IndexedDB before logout
     const response = await fetch('https://api.leadbaseai.in/update-user-limits', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -64,12 +59,7 @@ async function sendLogoutData(userData) {
 }
 
 // Function to clear storage
-async function clearStorage() {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (userData.email && userData.ip) {
-    await clearAllData(userData.email, userData.ip); // Clear all data from IndexedDB
-  } else {
-    localStorage.removeItem('userData');
-    sessionStorage.clear();
-  }
+function clearStorage() {
+  localStorage.removeItem('userData');
+  sessionStorage.clear();
 }

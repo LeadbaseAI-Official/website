@@ -1,17 +1,13 @@
-import { openDB, getUserLimits, saveUserLimits, clearAllData, startAutoSync, stopAutoSync } from '../utils/indexedDB.js';
+import { getUserLimits, saveUserLimits, openDB, clearAllData } from "../utils/indexedDB.js";
 
 const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
-const perPage = 10;
-const maxPagesPerSession = 10;
-
 let selectedRows = [];
 let dailyLimit = 10;
 let extraLimit = 5;
 let totalRowCount = 0;
 let selectedCountry = null;
-let autoSyncInterval = null;
 
 const SESSION_KEY = "leadbase_pages";
 const SESSION_TIME_KEY = "leadbase_last_reset";
@@ -27,7 +23,7 @@ function resetSessionIfExpired() {
 
 function incrementPageView() {
   const used = parseInt(sessionStorage.getItem(SESSION_KEY)) || 0;
-  if (used >= maxPagesPerSession) return false;
+  if (used >= 10) return false;
   sessionStorage.setItem(SESSION_KEY, (used + 1).toString());
   return true;
 }
@@ -40,9 +36,7 @@ async function loadPage(page, country) {
 
   try {
     const res = await fetch(`${API_URL}?page=${page}&country=${country}`);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
 
     const json = await res.json();
     const rows = json.data || [];
@@ -52,8 +46,7 @@ async function loadPage(page, country) {
     renderTable(rows);
     document.getElementById("pageInfo").innerText = `Page ${page} - ${country}`;
   } catch (err) {
-    console.error('Load page error:', err);
-    alert(`Error loading data: ${err.message}. Please try again or contact support.`);
+    alert(`❌ Error loading data: ${err.message}`);
   }
 }
 
@@ -67,22 +60,14 @@ function renderTable(rows) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
 
-  rows.forEach((row, index) => {
-    const tr = document.createElement("tr");
-
+  rows.forEach(row => {
     const [id, name, phone, email, bio, facebookLink] = row;
-    const rowData = {
-      Name: name,
-      Phone: phone,
-      Email: email,
-      Bio: bio,
-      "Facebook Link": facebookLink
-    };
+    const rowData = { Name: name, Phone: phone, Email: email, Bio: bio, "Facebook Link": facebookLink };
 
-    const isRowSelected = selectedRows.some(r => r.Email === rowData.Email);
-
+    const isSelected = selectedRows.some(r => r.Email === email);
+    const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td><input type="checkbox" data-email="${rowData.Email}" ${isRowSelected ? 'checked' : ''}></td>
+      <td><input type="checkbox" data-email="${email}" ${isSelected ? 'checked' : ''}></td>
       <td>${name}</td>
       <td>${phone}</td>
       <td>${email}</td>
@@ -90,27 +75,24 @@ function renderTable(rows) {
       <td><a href="${facebookLink}" target="_blank">Link</a></td>
     `;
 
-    if (isRowSelected) {
-      tr.classList.add("selected");
-    }
+    if (isSelected) tr.classList.add("selected");
 
     const checkbox = tr.querySelector('input[type="checkbox"]');
-    checkbox.addEventListener("change", (event) => {
-      const checked = event.target.checked;
-      if (checked) {
+    checkbox.addEventListener("change", (e) => {
+      if (e.target.checked) {
         selectedRows.push(rowData);
         tr.classList.add("selected");
       } else {
-        selectedRows = selectedRows.filter(r => r.Email !== rowData.Email);
+        selectedRows = selectedRows.filter(r => r.Email !== email);
         tr.classList.remove("selected");
       }
     });
 
-    tr.addEventListener("click", (event) => {
-      if (event.target.type === 'checkbox') return;
-
-      checkbox.checked = !checkbox.checked;
-      checkbox.dispatchEvent(new Event('change'));
+    tr.addEventListener("click", (e) => {
+      if (e.target.type !== "checkbox") {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event("change"));
+      }
     });
 
     tbody.appendChild(tr);
@@ -118,17 +100,9 @@ function renderTable(rows) {
 }
 
 async function handleDownload() {
-  const totalAllowed = dailyLimit + extraLimit;
-
-  if (selectedRows.length === 0) {
-    alert("⚠️ Please select at least one row.");
-    return;
-  }
-
-  if (selectedRows.length > totalAllowed) {
-    alert(`❌ Limit exceeded! You can only download ${totalAllowed} more rows.`);
-    return;
-  }
+  const allowed = dailyLimit + extraLimit;
+  if (selectedRows.length === 0) return alert("⚠️ Select at least one row.");
+  if (selectedRows.length > allowed) return alert(`❌ Limit exceeded. Max: ${allowed}`);
 
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
   const ws = XLSX.utils.json_to_sheet(selectedRows, { header: headers });
@@ -145,27 +119,14 @@ async function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
-  // Update userData in IndexedDB and localStorage
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  const userData = JSON.parse(localStorage.getItem("userData"));
   userData.daily_limit = dailyLimit;
   userData.extra_limit = extraLimit;
-  userData.lastUpdated = new Date().toISOString();
 
-  // Save to both IndexedDB and localStorage
-  const saved = await saveUserLimits(userData);
-  if (saved) {
-    localStorage.setItem('userData', JSON.stringify(userData));
-    console.log('✅ User limits updated in IndexedDB and localStorage');
-  } else {
-    console.warn('⚠️ Failed to save to IndexedDB, using localStorage only');
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-
-  // Immediately sync the updated limits to the server
-  syncLimitsToServer(userData);
+  await saveUserLimits(userData);
 
   selectedRows = [];
-  alert(`✅ Downloaded ${used} rows. Remaining limit: ${dailyLimit + extraLimit}`);
+  alert(`✅ Downloaded ${used} rows. Remaining: ${dailyLimit + extraLimit}`);
 }
 
 function showCountrySelection() {
@@ -183,53 +144,39 @@ function showDataTable() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  await openDB(); // Ensure IndexedDB is open
+  await openDB();
 
-  // Initialize limits from userData in IndexedDB
-  const localUserData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (!localUserData.email || !localUserData.ip) {
-    alert('Please log in to access the data dashboard.');
-    setTimeout(() => window.location.href = '../login/index.html', 2000);
-    return;
+  const localUser = JSON.parse(localStorage.getItem("userData") || "{}");
+  if (!localUser.email || !localUser.ip) {
+    alert("Please log in.");
+    return setTimeout(() => location.href = "../login/index.html", 2000);
   }
 
-  const userDataFromDB = await getUserLimits(localUserData.email, localUserData.ip);
-  if (userDataFromDB) {
-    dailyLimit = userDataFromDB.daily_limit !== undefined ? userDataFromDB.daily_limit : 100;
-    extraLimit = userDataFromDB.extra_limit !== undefined ? userDataFromDB.extra_limit : 0;
-    // Update localStorage with data from IndexedDB
-    localStorage.setItem('userData', JSON.stringify(userDataFromDB));
+  const limits = await getUserLimits(localUser.email);
+  if (limits) {
+    dailyLimit = limits.daily_limit ?? 100;
+    extraLimit = limits.extra_limit ?? 0;
   } else {
-    // If no data in IndexedDB, use localStorage (which might be default or from previous session)
-    dailyLimit = localUserData.daily_limit !== undefined ? localUserData.daily_limit : 100;
-    extraLimit = localUserData.extra_limit !== undefined ? localUserData.extra_limit : 0;
-  }
-
-  // Start auto-sync to keep data consistent across tabs
-  const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (currentUserData.email && currentUserData.ip) {
-    autoSyncInterval = await startAutoSync(currentUserData.email, currentUserData.ip);
-
-    // Listen for data updates from other tabs
-    window.addEventListener('userDataUpdated', (event) => {
-      const updatedData = event.detail;
-      dailyLimit = updatedData.daily_limit !== undefined ? updatedData.daily_limit : dailyLimit;
-      extraLimit = updatedData.extra_limit !== undefined ? updatedData.extra_limit : extraLimit;
-      console.log('📱 Data updated from another tab:', { dailyLimit, extraLimit });
+    dailyLimit = 100;
+    extraLimit = 0;
+    await saveUserLimits({
+      email: localUser.email,
+      daily_limit: dailyLimit,
+      extra_limit: extraLimit,
+      last_reset_date: new Date().toISOString().split("T")[0]
     });
   }
 
   resetSessionIfExpired();
 
-  const countryButtons = document.querySelectorAll(".country-btn");
-  countryButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      selectedCountry = button.dataset.country;
+  document.querySelectorAll(".country-btn").forEach(btn =>
+    btn.addEventListener("click", () => {
+      selectedCountry = btn.dataset.country;
       currentPage = 1;
       loadPage(currentPage, selectedCountry);
       showDataTable();
-    });
-  });
+    })
+  );
 
   document.getElementById("nextPage").addEventListener("click", () => {
     currentPage++;
@@ -252,98 +199,30 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("downloadBtn").addEventListener("click", handleDownload);
 
-  document.addEventListener("contextmenu", e => e.preventDefault());
-  document.addEventListener("selectstart", e => e.preventDefault());
-
-  // Save user data when the page is about to be closed/refreshed
-  window.addEventListener('beforeunload', () => {
-    // Stop auto-sync
-    if (autoSyncInterval) {
-      stopAutoSync(autoSyncInterval);
-    }
-
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    if (userData.email && userData.ip) {
-      // Use sendBeacon for reliable data sending during page unload
-      const data = JSON.stringify({
-        email: userData.email,
-        ip: userData.ip,
-        daily_limit: userData.daily_limit,
-        extra_limit: userData.extra_limit
-      });
-
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon(`${API_URL.replace('/data', '')}/update-user-limits`, data);
-      }
+  window.addEventListener("beforeunload", async () => {
+    const userData = await getUserLimits(localUser.email);
+    if (userData) {
+      navigator.sendBeacon(`${API_URL.replace("/data", "")}/update-user-limits`, JSON.stringify(userData));
     }
   });
 
   showCountrySelection();
 });
 
-// Function to sync limits to server immediately after download
-async function syncLimitsToServer(userData) {
-  try {
-    const response = await fetch(`${API_URL.replace('/data', '')}/update-user-limits`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userData.email,
-        ip: userData.ip,
-        daily_limit: userData.daily_limit,
-        extra_limit: userData.extra_limit
-      })
-    });
-
-    if (!response.ok) {
-      console.warn('Failed to sync user limits to server');
-    }
-  } catch (error) {
-    console.warn('Error syncing user limits:', error);
-  }
-}
-
-// Function to send user data to server on logout
-async function sendLogoutData(userData) {
-  try {
-    const response = await fetch(`${API_URL.replace('/data', '')}/update-user-limits`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: userData.email,
-        ip: userData.ip,
-        daily_limit: userData.daily_limit,
-        extra_limit: userData.extra_limit
-      })
-    });
-
-    if (!response.ok) {
-      console.warn('Failed to sync user data to server');
-    }
-  } catch (error) {
-    console.warn('Error syncing user data:', error);
-  }
-}
-
-// Function to clear storage
-async function clearStorage() {
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (userData.email && userData.ip) {
-    await clearAllData(userData.email, userData.ip);
-  } else {
-    localStorage.removeItem('userData');
-    sessionStorage.clear();
-  }
-}
-
-// Handle logout button click
+// Logout handler
 const logoutButton = document.querySelector('a[href="../index.html"]');
 if (logoutButton) {
-  logoutButton.addEventListener('click', async (e) => {
-    e.preventDefault(); // Prevent immediate navigation
-    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-    await sendLogoutData(userData); // Send user data to server
-    await clearStorage(); // Clear localStorage, sessionStorage, and IndexedDB
-    window.location.href = '../index.html'; // Redirect to index.html
+  logoutButton.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const user = JSON.parse(localStorage.getItem("userData") || "{}");
+    await fetch(`${API_URL.replace("/data", "")}/update-user-limits`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: user.email, ip: user.ip, daily_limit: dailyLimit, extra_limit: extraLimit })
+    });
+    await clearAllData(user.email);
+    localStorage.removeItem("userData");
+    sessionStorage.clear();
+    window.location.href = "../index.html";
   });
 }
