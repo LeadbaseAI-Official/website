@@ -14,22 +14,27 @@
   <link rel="icon" type="image/png" sizes="192x192" href="icons/192-192.png">
 
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const hamburger = document.querySelector('.hamburger');
-  const navMenu = document.querySelector('#nav-menu');
-  console.log('Hamburger:', hamburger);
-  console.log('Nav Menu:', navMenu);
-  if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => {
-      console.log('Hamburger clicked');
-      navMenu.classList.toggle('show');
-      console.log('Show class:', navMenu.classList.contains('show'));
+    document.addEventListener('DOMContentLoaded', () => {
+      const userData = JSON.parse(localStorage.getItem('userData'));
+      if (userData && userData.verified) {
+        window.location.href = 'Dashboard/index.html';
+      }
+
+      const hamburger = document.querySelector('.hamburger');
+      const navMenu = document.querySelector('#nav-menu');
+      console.log('Hamburger:', hamburger);
+      console.log('Nav Menu:', navMenu);
+      if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+          console.log('Hamburger clicked');
+          navMenu.classList.toggle('show');
+          console.log('Show class:', navMenu.classList.contains('show'));
+        });
+      } else {
+        console.log('Elements not found');
+      }
     });
-  } else {
-    console.log('Elements not found');
-  }
-});
-</script>
+  </script>
 </head>
 
 <body>

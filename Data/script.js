@@ -75,9 +75,10 @@ function renderTable(rows) {
       "Facebook Link": facebookLink
     };
 
-    let isSelected = false;
+    const isRowSelected = selectedRows.some(r => r.Email === rowData.Email);
+
     tr.innerHTML = `
-      <td><input type="checkbox" data-index="${index}"></td>
+      <td><input type="checkbox" data-email="${rowData.Email}" ${isRowSelected ? 'checked' : ''}></td>
       <td>${name}</td>
       <td>${phone}</td>
       <td>${email}</td>
@@ -85,16 +86,27 @@ function renderTable(rows) {
       <td><a href="${facebookLink}" target="_blank">Link</a></td>
     `;
 
-    tr.addEventListener("click", () => {
-      isSelected = !isSelected;
-      tr.classList.toggle("selected", isSelected);
-      tr.querySelector("input").checked = isSelected;
+    if (isRowSelected) {
+      tr.classList.add("selected");
+    }
 
-      if (isSelected) {
+    const checkbox = tr.querySelector('input[type="checkbox"]');
+    checkbox.addEventListener("change", (event) => {
+      const checked = event.target.checked;
+      if (checked) {
         selectedRows.push(rowData);
+        tr.classList.add("selected");
       } else {
         selectedRows = selectedRows.filter(r => r.Email !== rowData.Email);
+        tr.classList.remove("selected");
       }
+    });
+
+    tr.addEventListener("click", (event) => {
+      if (event.target.type === 'checkbox') return;
+
+      checkbox.checked = !checkbox.checked;
+      checkbox.dispatchEvent(new Event('change'));
     });
 
     tbody.appendChild(tr);
