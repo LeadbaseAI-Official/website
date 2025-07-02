@@ -26,19 +26,15 @@
       <h2 style="margin-bottom: 24px;">AFFILIATE DASHBOARD</h2>
       <div class="affiliate-box">
         <p class="affiliate-label">Your unique affiliate link:</p>
-        <input type="text" id="refLink" class="affiliate-input" readonly />
+        <div class="affiliate-link-container">
+          <input type="text" id="refLink" class="affiliate-input" readonly />
+          <button id="copyBtn" class="affiliate-btn copy-btn">Copy</button>
+        </div>
         <button id="generateBtn" class="affiliate-btn">Generate My Affiliate Link</button>
       </div>
     </div>
   </div>
 
-  <script>
-    document.getElementById("generateBtn").addEventListener("click", async () => {
-      const ip = await (await fetch("https://api64.ipify.org?format=json")).json();
-      const sanitizedIP = ip.ip.replace(/\./g, ""); // remove dots
-      const link = `https://leadbaseai.in/login.html?referal=${sanitizedIP}`;
-      document.getElementById("refLink").value = link;
-    });
-  </script>
+  <script src="script.js"></script>
 </body>
 </html>

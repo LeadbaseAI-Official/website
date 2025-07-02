@@ -163,16 +163,51 @@ body {
   color: #333;
 }
 
+.affiliate-link-container {
+  display: flex;
+  margin-bottom: 20px;
+}
+
 .affiliate-input {
-  width: 100%;
+  flex-grow: 1;
   padding: 14px 16px;
-  border-radius: 10px;
+  border-radius: 10px 0 0 10px;
   border: 1px solid #d1d5db;
   font-size: 1rem;
-  margin-bottom: 20px;
   background: #fafafa;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
+  border-right: none; /* Remove right border for seamless look */
+}
+
+.affiliate-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.affiliate-btn {
+  width: 100%;
+  padding: 14px 32px;
+  background: linear-gradient(135deg, #00b4ff 0%, #005bbb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1.05rem;
+  transition: all 0.3s ease;
+}
+
+.affiliate-btn.copy-btn {
+  width: auto; /* Adjust width for copy button */
+  border-radius: 0 10px 10px 0; /* Rounded corners only on right */
+  padding: 14px 20px;
+  background: linear-gradient(135deg, #28a745 0%, #218838 100%); /* Green for copy */
+}
+
+.affiliate-btn.copy-btn:hover {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
 }
 
 .affiliate-input:focus {
