@@ -1,4 +1,17 @@
 const API_URL = "https://api.leadbaseai.in";
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+function showLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('visible');
+  }
+}
+
+function hideLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.classList.remove('visible');
+  }
+}
 
 window.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('loginForm');
@@ -18,7 +31,12 @@ async function handleLogin(event) {
 
   if (!email || !name || !phone) return showError('Please fill in all fields.');
   if (!/^\S+@\S+\.\S+$/.test(email)) return showError('Please enter a valid email address.');
-  if (!/^\+?\d{10,15}$/.test(phone)) return showError('Please enter a valid phone number.');
+  if (!/^\+?\d{10,15}$/.test(phone)) {
+    hideLoading(); // Hide loading if validation fails
+    return showError('Please enter a valid phone number.');
+  }
+
+  showLoading(); // Show loading spinner
 
   try {
     const ipRes = await fetch('https://api.ipify.org?format=json');
@@ -72,6 +90,8 @@ async function handleLogin(event) {
   } catch (err) {
     console.error('Login error:', err);
     showError('Something went wrong. Please try again.');
+  } finally {
+    hideLoading(); // Ensure loading spinner is hidden
   }
 }
 

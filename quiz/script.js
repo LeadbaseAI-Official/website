@@ -1,4 +1,17 @@
 const API_URL = "https://api.leadbaseai.in";
+const loadingOverlay = document.getElementById('loadingOverlay');
+
+function showLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.classList.add('visible');
+  }
+}
+
+function hideLoading() {
+  if (loadingOverlay) {
+    loadingOverlay.classList.remove('visible');
+  }
+}
 
 const questions = [
   {
@@ -81,6 +94,8 @@ async function submitAnswers() {
     return;
   }
 
+  showLoading(); // Show loading spinner
+
   const payload = {
     email: user.email,
     ip: user.ip,
@@ -110,5 +125,7 @@ async function submitAnswers() {
   } catch (err) {
     console.error('Submit error:', err);
     alert('Submission failed. Please check your connection and try again.');
+  } finally {
+    hideLoading(); // Ensure loading spinner is hidden
   }
 }
