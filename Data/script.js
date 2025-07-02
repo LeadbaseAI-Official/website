@@ -115,18 +115,10 @@ function handleDownload() {
   }
 
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
-  const csv = [
-    headers.join(","),
-    ...selectedRows.map(row =>
-      headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(",")
-    )
-  ].join("\n");
-
-  const blob = new Blob([csv], { type: "text/csv" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = `selected_data_${selectedCountry}.csv`;
-  link.click();
+  const ws = XLSX.utils.json_to_sheet(selectedRows, { header: headers });
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Data");
+  XLSX.writeFile(wb, `selected_data_${selectedCountry}.xlsx`);
 
   const used = selectedRows.length;
   if (used <= dailyLimit) {
