@@ -85,12 +85,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
   // Handle logout button click
-  const logoutButton = document.querySelector('a[href="index.html"]');
+  const logoutButton = document.querySelector('a[href="../index.html"]');
   if (logoutButton) {
     logoutButton.addEventListener('click', async (e) => {
       e.preventDefault(); // Prevent immediate navigation
+      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
       await sendLogoutData(userData); // Send user data to server
       clearStorage(); // Clear localStorage and sessionStorage
-      window.location.href = 'index.html'; // Redirect to index.html
+      window.location.href = '../index.html'; // Redirect to index.html
     });
   }
