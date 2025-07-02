@@ -1,3 +1,5 @@
+import { openDB, getUserLimits, saveUserLimits } from '../utils/indexedDB.js';
+
 const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');
 
@@ -12,8 +14,6 @@ function hideLoading() {
     loadingOverlay.classList.remove('visible');
   }
 }
-
-import { openDB, getUserLimits, saveUserLimits, deleteUserLimits } from '../utils/indexedDB.js';
 
 window.addEventListener('DOMContentLoaded', async () => {
   await openDB(); // Open IndexedDB when the page loads
@@ -62,7 +62,7 @@ async function handleLogin(event) {
 
     if (result.emailExists && result.ipExists) {
       const row = result.user || {};
-      let userData = await getUserLimits(email); // Try to get existing limits from IndexedDB
+      let userData = await getUserLimits(email, ip); // Try to get existing limits from IndexedDB
       if (!userData) { // If no existing data, use server data or defaults
         userData = {
           email,

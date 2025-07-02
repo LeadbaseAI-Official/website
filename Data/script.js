@@ -1,15 +1,17 @@
+import { openDB, getUserLimits, saveUserLimits, clearAllData, startAutoSync, stopAutoSync } from '../utils/indexedDB.js';
+
 const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
 const perPage = 10;
 const maxPagesPerSession = 10;
-import { getUserLimits, saveUserLimits } from '../utils/indexedDB.js';
 
 let selectedRows = [];
 let dailyLimit = 10;
 let extraLimit = 5;
 let totalRowCount = 0;
 let selectedCountry = null;
+let autoSyncInterval = null;
 
 const SESSION_KEY = "leadbase_pages";
 const SESSION_TIME_KEY = "leadbase_last_reset";
@@ -147,8 +149,17 @@ async function handleDownload() {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   userData.daily_limit = dailyLimit;
   userData.extra_limit = extraLimit;
-  await saveUserLimits(userData); // Save to IndexedDB
-  localStorage.setItem('userData', JSON.stringify(userData)); // Update localStorage for immediate use
+  userData.lastUpdated = new Date().toISOString();
+
+  // Save to both IndexedDB and localStorage
+  const saved = await saveUserLimits(userData);
+  if (saved) {
+    localStorage.setItem('userData', JSON.stringify(userData));
+    console.log('✅ User limits updated in IndexedDB and localStorage');
+  } else {
+    console.warn('⚠️ Failed to save to IndexedDB, using localStorage only');
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
 
   // Immediately sync the updated limits to the server
   syncLimitsToServer(userData);
@@ -182,7 +193,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     return;
   }
 
-  const userDataFromDB = await getUserLimits(localUserData.email);
+  const userDataFromDB = await getUserLimits(localUserData.email, localUserData.ip);
   if (userDataFromDB) {
     dailyLimit = userDataFromDB.daily_limit !== undefined ? userDataFromDB.daily_limit : 100;
     extraLimit = userDataFromDB.extra_limit !== undefined ? userDataFromDB.extra_limit : 0;
@@ -192,6 +203,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     // If no data in IndexedDB, use localStorage (which might be default or from previous session)
     dailyLimit = localUserData.daily_limit !== undefined ? localUserData.daily_limit : 100;
     extraLimit = localUserData.extra_limit !== undefined ? localUserData.extra_limit : 0;
+  }
+
+  // Start auto-sync to keep data consistent across tabs
+  const currentUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+  if (currentUserData.email && currentUserData.ip) {
+    autoSyncInterval = await startAutoSync(currentUserData.email, currentUserData.ip);
+
+    // Listen for data updates from other tabs
+    window.addEventListener('userDataUpdated', (event) => {
+      const updatedData = event.detail;
+      dailyLimit = updatedData.daily_limit !== undefined ? updatedData.daily_limit : dailyLimit;
+      extraLimit = updatedData.extra_limit !== undefined ? updatedData.extra_limit : extraLimit;
+      console.log('📱 Data updated from another tab:', { dailyLimit, extraLimit });
+    });
   }
 
   resetSessionIfExpired();
@@ -232,6 +257,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Save user data when the page is about to be closed/refreshed
   window.addEventListener('beforeunload', () => {
+    // Stop auto-sync
+    if (autoSyncInterval) {
+      stopAutoSync(autoSyncInterval);
+    }
+
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     if (userData.email && userData.ip) {
       // Use sendBeacon for reliable data sending during page unload
@@ -296,9 +326,14 @@ async function sendLogoutData(userData) {
 }
 
 // Function to clear storage
-function clearStorage() {
-  localStorage.removeItem('userData');
-  sessionStorage.clear();
+async function clearStorage() {
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  if (userData.email && userData.ip) {
+    await clearAllData(userData.email, userData.ip);
+  } else {
+    localStorage.removeItem('userData');
+    sessionStorage.clear();
+  }
 }
 
 // Handle logout button click
@@ -308,7 +343,7 @@ if (logoutButton) {
     e.preventDefault(); // Prevent immediate navigation
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
     await sendLogoutData(userData); // Send user data to server
-    clearStorage(); // Clear localStorage and sessionStorage
+    await clearStorage(); // Clear localStorage, sessionStorage, and IndexedDB
     window.location.href = '../index.html'; // Redirect to index.html
   });
 }

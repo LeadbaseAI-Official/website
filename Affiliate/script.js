@@ -1,4 +1,4 @@
-import { openDB, getUserLimits, saveUserLimits, deleteUserLimits } from '../utils/indexedDB.js';
+import { openDB, saveUserLimits, clearAllData } from '../utils/indexedDB.js';
 
 document.addEventListener("DOMContentLoaded", async () => {
   await openDB(); // Ensure IndexedDB is open
@@ -66,9 +66,10 @@ async function sendLogoutData(userData) {
 // Function to clear storage
 async function clearStorage() {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (userData.email) {
-    await deleteUserLimits(userData.email); // Delete from IndexedDB
+  if (userData.email && userData.ip) {
+    await clearAllData(userData.email, userData.ip); // Clear all data from IndexedDB
+  } else {
+    localStorage.removeItem('userData');
+    sessionStorage.clear();
   }
-  localStorage.removeItem('userData');
-  sessionStorage.clear();
 }

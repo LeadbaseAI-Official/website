@@ -1,3 +1,5 @@
+import { openDB, getUserLimits, saveUserLimits, clearAllData } from '../utils/indexedDB.js';
+
 const API_URL = "https://api.leadbaseai.in";
 
 const SESSION_KEY = "leadbase_user_fetch";
@@ -75,7 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Only update limits if the server values are higher (indicating a limit increase)
       // Preserve locally stored reduced limits
-      const userDataFromDB = await getUserLimits(localUserData.email);
+      const userDataFromDB = await getUserLimits(localUserData.email, localUserData.ip);
       const currentDailyLimit = userDataFromDB?.daily_limit !== undefined ? userDataFromDB.daily_limit : 100;
       const currentExtraLimit = userDataFromDB?.extra_limit !== undefined ? userDataFromDB.extra_limit : 0;
 
@@ -88,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   } else {
     // If not fetching from server, load limits from IndexedDB
-    const userDataFromDB = await getUserLimits(localUserData.email);
+    const userDataFromDB = await getUserLimits(localUserData.email, localUserData.ip);
     if (userDataFromDB) {
       localUserData.daily_limit = userDataFromDB.daily_limit !== undefined ? userDataFromDB.daily_limit : 100;
       localUserData.extra_limit = userDataFromDB.extra_limit !== undefined ? userDataFromDB.extra_limit : 0;
@@ -147,11 +149,12 @@ async function sendLogoutData(userData) {
 // Function to clear storage
 async function clearStorage() {
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (userData.email) {
-    await deleteUserLimits(userData.email); // Delete from IndexedDB
+  if (userData.email && userData.ip) {
+    await clearAllData(userData.email, userData.ip); // Clear all data from IndexedDB
+  } else {
+    localStorage.removeItem('userData');
+    sessionStorage.clear();
   }
-  localStorage.removeItem('userData');
-  sessionStorage.clear();
 }
 
 // Handle logout button click
