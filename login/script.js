@@ -64,9 +64,9 @@ async function handleLogin(event) {
         name: row.name || name,
         phone: row.phone || phone,
         verified: true,
-        daily_limit: parseInt(row.daily_limit) || 100,
-        extra_limit: parseInt(row.extra_limit) || 0,
-        affiliates: parseInt(row.affiliate) || 0
+        daily_limit: parseInt(row.daily_limit) || (JSON.parse(localStorage.getItem('userData'))?.daily_limit ?? 100),
+        extra_limit: parseInt(row.extra_limit) || (JSON.parse(localStorage.getItem('userData'))?.extra_limit ?? 0),
+        affiliates: parseInt(row.affiliate) || (JSON.parse(localStorage.getItem('userData'))?.affiliates ?? 0)
       };
       localStorage.setItem('userData', JSON.stringify(userData));
       window.location.href = '../Dashboard/index.html';
@@ -79,9 +79,9 @@ async function handleLogin(event) {
         name,
         phone,
         verified: false,
-        daily_limit: 100,
-        extra_limit: 0,
-        affiliates: 0,
+        daily_limit: (JSON.parse(localStorage.getItem('userData'))?.daily_limit ?? 100),
+        extra_limit: (JSON.parse(localStorage.getItem('userData'))?.extra_limit ?? 0),
+        affiliates: (JSON.parse(localStorage.getItem('userData'))?.affiliates ?? 0),
         ref_source: localStorage.getItem("ref_source") || null // Store ref_source
       };
       localStorage.setItem('userData', JSON.stringify(userData));
