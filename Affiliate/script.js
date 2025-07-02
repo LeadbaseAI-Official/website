@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const ipRes = await fetch("https://api64.ipify.org?format=json");
       const { ip } = await ipRes.json();
       const sanitizedIP = ip.replace(/\./g, "");
-      const link = `https://leadbaseai.in/login.html?referal=${sanitizedIP}`;
+      const link = `https://leadbaseai.in/login?referal=${sanitizedIP}`;
       refLinkInput.value = link;
     } catch (error) {
       console.error("Error generating affiliate link:", error);
