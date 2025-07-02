@@ -13,7 +13,11 @@ function hideLoading() {
   }
 }
 
-window.addEventListener('DOMContentLoaded', () => {
+import { openDB, getUserLimits, saveUserLimits, deleteUserLimits } from '../utils/indexedDB.js';
+
+window.addEventListener('DOMContentLoaded', async () => {
+  await openDB(); // Open IndexedDB when the page loads
+
   const form = document.getElementById('loginForm');
   if (form) form.addEventListener('submit', handleLogin);
 
@@ -58,17 +62,27 @@ async function handleLogin(event) {
 
     if (result.emailExists && result.ipExists) {
       const row = result.user || {};
-      const userData = {
-        email,
-        ip,
-        name: row.name || name,
-        phone: row.phone || phone,
-        verified: true,
-        daily_limit: parseInt(row.daily_limit) || (JSON.parse(localStorage.getItem('userData'))?.daily_limit ?? 100),
-        extra_limit: parseInt(row.extra_limit) || (JSON.parse(localStorage.getItem('userData'))?.extra_limit ?? 0),
-        affiliates: parseInt(row.affiliate) || (JSON.parse(localStorage.getItem('userData'))?.affiliates ?? 0)
-      };
-      localStorage.setItem('userData', JSON.stringify(userData));
+      let userData = await getUserLimits(email); // Try to get existing limits from IndexedDB
+      if (!userData) { // If no existing data, use server data or defaults
+        userData = {
+          email,
+          ip,
+          name: row.name || name,
+          phone: row.phone || phone,
+          verified: true,
+          daily_limit: parseInt(row.daily_limit) || 100,
+          extra_limit: parseInt(row.extra_limit) || 0,
+          affiliates: parseInt(row.affiliate) || 0
+        };
+      } else { // If data exists, update other fields but keep limits
+        userData.ip = ip;
+        userData.name = row.name || name;
+        userData.phone = row.phone || phone;
+        userData.verified = true;
+        userData.affiliates = parseInt(row.affiliate) || userData.affiliates;
+      }
+      await saveUserLimits(userData); // Save updated data to IndexedDB
+      localStorage.setItem('userData', JSON.stringify(userData)); // Keep localStorage for immediate access
       window.location.href = '../Dashboard/index.html';
     } else if (result.ipExists && !result.emailExists) {
       showError('Your one account already exists, please login with that.');
@@ -79,12 +93,13 @@ async function handleLogin(event) {
         name,
         phone,
         verified: false,
-        daily_limit: (JSON.parse(localStorage.getItem('userData'))?.daily_limit ?? 100),
-        extra_limit: (JSON.parse(localStorage.getItem('userData'))?.extra_limit ?? 0),
-        affiliates: (JSON.parse(localStorage.getItem('userData'))?.affiliates ?? 0),
-        ref_source: localStorage.getItem("ref_source") || null // Store ref_source
+        daily_limit: 100, // New users start with default limits
+        extra_limit: 0,
+        affiliates: 0,
+        ref_source: localStorage.getItem("ref_source") || null
       };
-      localStorage.setItem('userData', JSON.stringify(userData));
+      await saveUserLimits(userData); // Save new user data to IndexedDB
+      localStorage.setItem('userData', JSON.stringify(userData)); // Keep localStorage for immediate access
       window.location.href = '../quiz/index.html';
     }
   } catch (err) {

@@ -1,4 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
+import { openDB, getUserLimits, saveUserLimits, deleteUserLimits } from '../utils/indexedDB.js';
+
+document.addEventListener("DOMContentLoaded", async () => {
+  await openDB(); // Ensure IndexedDB is open
+
   const generateBtn = document.getElementById("generateBtn");
   const refLinkInput = document.getElementById("refLink");
   const copyBtn = document.getElementById("copyBtn");
@@ -30,8 +34,41 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault(); // Prevent immediate navigation
       const userData = JSON.parse(localStorage.getItem('userData') || '{}');
       await sendLogoutData(userData); // Send user data to server
-      clearStorage(); // Clear localStorage and sessionStorage
+      await clearStorage(); // Clear localStorage and IndexedDB
       window.location.href = '../index.html'; // Redirect to index.html
     });
   }
 });
+
+// Function to send user data to server on logout
+async function sendLogoutData(userData) {
+  try {
+    await saveUserLimits(userData); // Save current state to IndexedDB before logout
+    const response = await fetch('https://api.leadbaseai.in/update-user-limits', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.email,
+        ip: userData.ip,
+        daily_limit: userData.daily_limit,
+        extra_limit: userData.extra_limit
+      })
+    });
+
+    if (!response.ok) {
+      console.warn('Failed to sync user data to server');
+    }
+  } catch (error) {
+    console.warn('Error syncing user data:', error);
+  }
+}
+
+// Function to clear storage
+async function clearStorage() {
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  if (userData.email) {
+    await deleteUserLimits(userData.email); // Delete from IndexedDB
+  }
+  localStorage.removeItem('userData');
+  sessionStorage.clear();
+}

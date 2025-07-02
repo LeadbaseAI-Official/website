@@ -3,6 +3,8 @@ const API_URL = "https://api.leadbaseai.in/data";
 let currentPage = 1;
 const perPage = 10;
 const maxPagesPerSession = 10;
+import { getUserLimits, saveUserLimits } from '../utils/indexedDB.js';
+
 let selectedRows = [];
 let dailyLimit = 10;
 let extraLimit = 5;
@@ -113,7 +115,7 @@ function renderTable(rows) {
   });
 }
 
-function handleDownload() {
+async function handleDownload() {
   const totalAllowed = dailyLimit + extraLimit;
 
   if (selectedRows.length === 0) {
@@ -141,11 +143,15 @@ function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
-  // Update userData in localStorage
+  // Update userData in IndexedDB and localStorage
   const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   userData.daily_limit = dailyLimit;
   userData.extra_limit = extraLimit;
-  localStorage.setItem('userData', JSON.stringify(userData));
+  await saveUserLimits(userData); // Save to IndexedDB
+  localStorage.setItem('userData', JSON.stringify(userData)); // Update localStorage for immediate use
+
+  // Immediately sync the updated limits to the server
+  syncLimitsToServer(userData);
 
   selectedRows = [];
   alert(`✅ Downloaded ${used} rows. Remaining limit: ${dailyLimit + extraLimit}`);
@@ -165,16 +171,28 @@ function showDataTable() {
   document.querySelector(".footer-controls").style.display = "flex";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize limits from userData in localStorage
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (!userData.email || !userData.ip) {
+document.addEventListener("DOMContentLoaded", async () => {
+  await openDB(); // Ensure IndexedDB is open
+
+  // Initialize limits from userData in IndexedDB
+  const localUserData = JSON.parse(localStorage.getItem('userData') || '{}');
+  if (!localUserData.email || !localUserData.ip) {
     alert('Please log in to access the data dashboard.');
-    setTimeout(() => window.location.href = 'index.html', 2000);
+    setTimeout(() => window.location.href = '../login/index.html', 2000);
     return;
   }
-  dailyLimit = userData.daily_limit !== undefined ? userData.daily_limit : 10;
-  extraLimit = userData.extra_limit !== undefined ? userData.extra_limit : 5;
+
+  const userDataFromDB = await getUserLimits(localUserData.email);
+  if (userDataFromDB) {
+    dailyLimit = userDataFromDB.daily_limit !== undefined ? userDataFromDB.daily_limit : 100;
+    extraLimit = userDataFromDB.extra_limit !== undefined ? userDataFromDB.extra_limit : 0;
+    // Update localStorage with data from IndexedDB
+    localStorage.setItem('userData', JSON.stringify(userDataFromDB));
+  } else {
+    // If no data in IndexedDB, use localStorage (which might be default or from previous session)
+    dailyLimit = localUserData.daily_limit !== undefined ? localUserData.daily_limit : 100;
+    extraLimit = localUserData.extra_limit !== undefined ? localUserData.extra_limit : 0;
+  }
 
   resetSessionIfExpired();
 
@@ -212,17 +230,85 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("selectstart", e => e.preventDefault());
 
+  // Save user data when the page is about to be closed/refreshed
+  window.addEventListener('beforeunload', () => {
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    if (userData.email && userData.ip) {
+      // Use sendBeacon for reliable data sending during page unload
+      const data = JSON.stringify({
+        email: userData.email,
+        ip: userData.ip,
+        daily_limit: userData.daily_limit,
+        extra_limit: userData.extra_limit
+      });
+
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon(`${API_URL.replace('/data', '')}/update-user-limits`, data);
+      }
+    }
+  });
+
   showCountrySelection();
 });
 
-  // Handle logout button click
-  const logoutButton = document.querySelector('a[href="../index.html"]');
-  if (logoutButton) {
-    logoutButton.addEventListener('click', async (e) => {
-      e.preventDefault(); // Prevent immediate navigation
-      const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-      await sendLogoutData(userData); // Send user data to server
-      clearStorage(); // Clear localStorage and sessionStorage
-      window.location.href = '../index.html'; // Redirect to index.html
+// Function to sync limits to server immediately after download
+async function syncLimitsToServer(userData) {
+  try {
+    const response = await fetch(`${API_URL.replace('/data', '')}/update-user-limits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.email,
+        ip: userData.ip,
+        daily_limit: userData.daily_limit,
+        extra_limit: userData.extra_limit
+      })
     });
+
+    if (!response.ok) {
+      console.warn('Failed to sync user limits to server');
+    }
+  } catch (error) {
+    console.warn('Error syncing user limits:', error);
   }
+}
+
+// Function to send user data to server on logout
+async function sendLogoutData(userData) {
+  try {
+    const response = await fetch(`${API_URL.replace('/data', '')}/update-user-limits`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: userData.email,
+        ip: userData.ip,
+        daily_limit: userData.daily_limit,
+        extra_limit: userData.extra_limit
+      })
+    });
+
+    if (!response.ok) {
+      console.warn('Failed to sync user data to server');
+    }
+  } catch (error) {
+    console.warn('Error syncing user data:', error);
+  }
+}
+
+// Function to clear storage
+function clearStorage() {
+  localStorage.removeItem('userData');
+  sessionStorage.clear();
+}
+
+// Handle logout button click
+const logoutButton = document.querySelector('a[href="../index.html"]');
+if (logoutButton) {
+  logoutButton.addEventListener('click', async (e) => {
+    e.preventDefault(); // Prevent immediate navigation
+    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+    await sendLogoutData(userData); // Send user data to server
+    clearStorage(); // Clear localStorage and sessionStorage
+    window.location.href = '../index.html'; // Redirect to index.html
+  });
+}
