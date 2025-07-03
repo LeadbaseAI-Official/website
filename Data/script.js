@@ -7,8 +7,8 @@ let selectedRows = [];
 let totalRowCount = 0;
 let selectedCountry = null;
 
-let dailyLimit = 10;
-let extraLimit = 5;
+let dailyLimit = 0;
+let extraLimit = 0;
 
 const SESSION_KEY = "leadbase_pages";
 const SESSION_TIME_KEY = "leadbase_last_reset";
@@ -31,7 +31,7 @@ function incrementPageView() {
 
 async function loadPage(page, country) {
   if (!incrementPageView()) {
-    alert("⛔ You’ve hit the session limit of 10 pages. Try again in 6 hours.");
+    alert("⛔ You've hit the session limit of 10 pages. Try again in 6 hours.");
     return;
   }
 
@@ -105,7 +105,7 @@ async function handleDownload() {
     return;
   }
 
-  // ✅ Create and trigger download
+  // Create and trigger download
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
   const csv = [
     headers.join(","),
@@ -118,7 +118,7 @@ async function handleDownload() {
   link.download = `selected_data_${selectedCountry}.csv`;
   link.click();
 
-  // ✅ Deduct and persist limits
+  // Deduct and persist limits
   const used = selectedRows.length;
   if (used <= dailyLimit) {
     dailyLimit -= used;
@@ -128,6 +128,7 @@ async function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
+  // Update user in IndexedDB
   const user = await userManager.get();
   user.daily_limit = dailyLimit;
   user.extra_limit = extraLimit;
@@ -151,6 +152,22 @@ function showDataTable() {
   document.querySelector(".footer-controls").style.display = "flex";
 }
 
+async function initializeLimits(user) {
+  // Check if user is new (doesn't have limit properties set)
+  if (!user.hasOwnProperty('daily_limit') || !user.hasOwnProperty('extra_limit')) {
+    // New user - set default limits
+    dailyLimit = 10;
+    extraLimit = 5;
+    user.daily_limit = dailyLimit;
+    user.extra_limit = extraLimit;
+    await userManager.set(user);
+  } else {
+    // Existing user - load persisted limits (even if 0)
+    dailyLimit = user.daily_limit;
+    extraLimit = user.extra_limit;
+  }
+}
+
 // === MAIN ENTRY POINT ===
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await userManager.get();
@@ -160,9 +177,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     return window.location.href = "index.html";
   }
 
-  // ✅ Load persisted limits
-  dailyLimit = user.daily_limit ?? 10;
-  extraLimit = user.extra_limit ?? 5;
+  // Initialize limits based on user status (new vs existing)
+  await initializeLimits(user);
 
   resetSessionIfExpired();
 
