@@ -1,3 +1,4 @@
+// app.js
 class IndexedDBCRUD {
   constructor(dbName, storeName, keyPath, version = 1) {
     this.dbName = dbName;
@@ -12,15 +13,11 @@ class IndexedDBCRUD {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
 
-      request.onerror = () => {
-        console.error(`❌ Failed to open database: ${this.dbName}`);
-        reject(request.error);
-      };
+      request.onerror = () => reject(request.error);
 
       request.onsuccess = () => {
         this.db = request.result;
         this.isInitialized = true;
-        console.log(`✅ Database ${this.dbName} initialized`);
         resolve(true);
       };
 
@@ -31,7 +28,6 @@ class IndexedDBCRUD {
           indexes.forEach(index => {
             store.createIndex(index.name, index.name, { unique: index.unique || false });
           });
-          console.log(`🔄 Created object store: ${this.storeName}`);
         }
       };
     });
@@ -119,114 +115,56 @@ class IndexedDBCRUD {
     });
   }
 
-  async count() {
-    this._checkInit();
-    return new Promise((resolve, reject) => {
-      const tx = this.db.transaction(this.storeName, 'readonly');
-      const store = tx.objectStore(this.storeName);
-      const request = store.count();
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
-  async searchByIndex(indexName, value) {
-    this._checkInit();
-    return new Promise((resolve, reject) => {
-      const tx = this.db.transaction(this.storeName, 'readonly');
-      const store = tx.objectStore(this.storeName);
-      const index = store.index(indexName);
-      const request = index.getAll(value);
-      request.onsuccess = () => resolve(request.result || []);
-      request.onerror = () => reject(request.error);
-    });
-  }
-
   async filter(filterFn) {
-    const allRecords = await this.readAll();
-    return allRecords.filter(filterFn);
-  }
-
-  async exportData() {
-    const data = await this.readAll();
-    return JSON.stringify(data, null, 2);
-  }
-
-  async importData(jsonData, clearFirst = false) {
-    const data = JSON.parse(jsonData);
-    if (clearFirst) await this.clear();
-    let count = 0;
-    for (const record of data) {
-      try {
-        await this.create(record);
-        count++;
-      } catch (e) {
-        console.warn('⚠️ Import error:', record, e);
-      }
-    }
-    return count;
-  }
-
-  getInfo() {
-    return {
-      dbName: this.dbName,
-      storeName: this.storeName,
-      keyPath: this.keyPath,
-      version: this.version,
-      isInitialized: this.isInitialized
-    };
+    const all = await this.readAll();
+    return all.filter(filterFn);
   }
 }
 
-// === UserManager (Minimal, Exportable) ===
 class UserManager {
   constructor() {
     this.db = new IndexedDBCRUD('UserDatabase', 'users', 'email');
+    this.initialized = false;
   }
 
   async init() {
-    await this.db.init([
-      { name: 'name', unique: false },
-      { name: 'verified', unique: false },
-      { name: 'ref_source', unique: false }
-    ]);
+    if (!this.initialized) {
+      await this.db.init([
+        { name: 'name', unique: false },
+        { name: 'verified', unique: false },
+        { name: 'ref_source', unique: false }
+      ]);
+      this.initialized = true;
+    }
   }
 
   async saveUser(userData) {
-    const user = { ...userData, affiliates: userData.affiliates || 0 };
-    const existing = await this.db.read(user.email);
-    if (existing) return await this.db.update(user.email, user);
-    return await this.db.create(user);
+    await this.init();
+    const existing = await this.db.read(userData.email);
+    if (existing) return await this.db.update(userData.email, userData);
+    return await this.db.create(userData);
   }
 
-  async loadUsers() {
-    return await this.db.readAll();
-  }
-
-  async deleteUser(email) {
-    return await this.db.delete(email);
-  }
-
-  async clearAllUsers() {
-    return await this.db.clear();
+  async set(userData) {
+    return await this.saveUser(userData);
   }
 
   async getUserByEmail(email) {
+    await this.init();
     return await this.db.read(email);
   }
 
-  async getVerifiedUsers() {
-    return await this.db.filter(user => user.verified);
-  }
-
-  // Added to retrieve the current user, assuming it's the first one in the DB
   async get() {
+    await this.init();
     const users = await this.db.readAll();
     return users.length > 0 ? users[0] : null;
   }
+
+  async clearAllUsers() {
+    await this.init();
+    return await this.db.clear();
+  }
 }
 
-// === Proper ES Module Export ===
 export { IndexedDBCRUD, UserManager };
 export const userManager = new UserManager();
-// Minor change to force browser refresh (attempt 4)

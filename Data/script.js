@@ -1,10 +1,8 @@
-import { UserManager } from "../utility/app.js";
+import { userManager } from "../utility/app.js";
 
 const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
-const perPage = 10;
-const maxPagesPerSession = 10;
 let selectedRows = [];
 let dailyLimit = 10;
 let extraLimit = 5;
@@ -25,7 +23,7 @@ function resetSessionIfExpired() {
 
 function incrementPageView() {
   const used = parseInt(sessionStorage.getItem(SESSION_KEY)) || 0;
-  if (used >= maxPagesPerSession) return false;
+  if (used >= 10) return false;
   sessionStorage.setItem(SESSION_KEY, (used + 1).toString());
   return true;
 }
@@ -38,8 +36,6 @@ async function loadPage(page, country) {
 
   try {
     const res = await fetch(`${API_URL}?page=${page}&country=${country}`);
-    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
-
     const json = await res.json();
     const rows = json.data || [];
     totalRowCount = json.total || 0;
@@ -49,7 +45,7 @@ async function loadPage(page, country) {
     document.getElementById("pageInfo").innerText = `Page ${page} - ${country}`;
   } catch (err) {
     console.error('Load page error:', err);
-    alert(`Error loading data: ${err.message}. Please try again or contact support.`);
+    alert(`Error loading data: ${err.message}`);
   }
 }
 
@@ -67,13 +63,7 @@ function renderTable(rows) {
     const tr = document.createElement("tr");
 
     const [id, name, phone, email, bio, facebookLink] = row;
-    const rowData = {
-      Name: name,
-      Phone: phone,
-      Email: email,
-      Bio: bio,
-      "Facebook Link": facebookLink
-    };
+    const rowData = { Name: name, Phone: phone, Email: email, Bio: bio, "Facebook Link": facebookLink };
 
     let isSelected = false;
     tr.innerHTML = `
@@ -102,24 +92,21 @@ function renderTable(rows) {
 }
 
 async function handleDownload() {
-  const totalAllowed = dailyLimit + extraLimit;
-
+  const allowed = dailyLimit + extraLimit;
   if (selectedRows.length === 0) {
     alert("⚠️ Please select at least one row.");
     return;
   }
 
-  if (selectedRows.length > totalAllowed) {
-    alert(`❌ Limit exceeded! You can only download ${totalAllowed} more rows.`);
+  if (selectedRows.length > allowed) {
+    alert(`❌ Limit exceeded! You can only download ${allowed} more rows.`);
     return;
   }
 
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
   const csv = [
     headers.join(","),
-    ...selectedRows.map(row =>
-      headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(",")
-    )
+    ...selectedRows.map(row => headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(","))
   ].join("\n");
 
   const blob = new Blob([csv], { type: "text/csv" });
@@ -137,11 +124,10 @@ async function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
-  // Update user data in IndexedDB
-  const userData = await UserManager.get();
-  userData.daily_limit = dailyLimit;
-  userData.extra_limit = extraLimit;
-  await UserManager.set(userData);
+  const user = await userManager.get();
+  user.daily_limit = dailyLimit;
+  user.extra_limit = extraLimit;
+  await userManager.set(user);
 
   selectedRows = [];
   alert(`✅ Downloaded ${used} rows. Remaining limit: ${dailyLimit + extraLimit}`);
@@ -162,28 +148,25 @@ function showDataTable() {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-  const userData = await UserManager.get();
-
-  if (!userData?.email || !userData?.ip) {
+  const user = await userManager.get();
+  if (!user?.email || !user?.ip) {
     alert('Please log in to access the data dashboard.');
-    setTimeout(() => window.location.href = 'index.html', 2000);
-    return;
+    return window.location.href = "index.html";
   }
 
-  dailyLimit = userData.daily_limit !== undefined ? userData.daily_limit : 10;
-  extraLimit = userData.extra_limit !== undefined ? userData.extra_limit : 5;
+  dailyLimit = user.daily_limit ?? 10;
+  extraLimit = user.extra_limit ?? 5;
 
   resetSessionIfExpired();
 
-  const countryButtons = document.querySelectorAll(".country-btn");
-  countryButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      selectedCountry = button.dataset.country;
+  document.querySelectorAll(".country-btn").forEach(btn =>
+    btn.addEventListener("click", () => {
+      selectedCountry = btn.dataset.country;
       currentPage = 1;
       loadPage(currentPage, selectedCountry);
       showDataTable();
-    });
-  });
+    })
+  );
 
   document.getElementById("nextPage").addEventListener("click", () => {
     currentPage++;
@@ -199,13 +182,11 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("backToCountries").addEventListener("click", () => {
     selectedCountry = null;
-    currentPage = 1;
     selectedRows = [];
     showCountrySelection();
   });
 
   document.getElementById("downloadBtn").addEventListener("click", handleDownload);
-
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("selectstart", e => e.preventDefault());
 
@@ -214,11 +195,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 const logoutButton = document.querySelector('a[href="index.html"]');
 if (logoutButton) {
-  logoutButton.addEventListener('click', async (e) => {
+  logoutButton.addEventListener("click", async e => {
     e.preventDefault();
-    const userData = await UserManager.get();
-    await sendLogoutData(userData);
-    clearStorage(); // this should clear IndexedDB or session, depending on your `app.js`
-    window.location.href = 'index.html';
+    const user = await userManager.get();
+    await userManager.clearAllUsers();
+    window.location.href = "index.html";
   });
 }
