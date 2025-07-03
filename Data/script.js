@@ -59,17 +59,14 @@ function renderTable(rows) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
 
-  rows.forEach((row, index) => {
+  // ✅ Reverse the rows so latest entries come first
+  rows.reverse().forEach((row, index) => {
     const [name, email, phone, bio, facebookLink] = row;
 
-    // ✅ Dynamically generate ID (e.g. row number)
-    const id = index + 1;
-
     const rowData = {
-      ID: id,
       Name: name,
-      Phone: phone,
       Email: email,
+      Phone: phone,
       Bio: bio,
       "Facebook Link": facebookLink
     };
@@ -79,10 +76,9 @@ function renderTable(rows) {
 
     tr.innerHTML = `
       <td><input type="checkbox" data-index="${index}"></td>
-      <td>${id}</td>
       <td>${name}</td>
-      <td>${phone}</td>
       <td>${email}</td>
+      <td>${phone}</td>
       <td>${bio}</td>
       <td><a href="${facebookLink}" target="_blank">Link</a></td>
     `;
