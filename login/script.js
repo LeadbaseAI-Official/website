@@ -1,27 +1,32 @@
 const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');
 
-// Import UserManager from utility/app.js
-import { UserManager } from '../utility/app.js';
-
+// Correct import: import the instance, not the class
+import { userManager } from '../utility/app.js'; // ✅ FIXED
 
 function showLoading() {
-  if (loadingOverlay) {
-    loadingOverlay.classList.add('visible');
-  }
+  if (loadingOverlay) loadingOverlay.classList.add('visible');
 }
 
 function hideLoading() {
-  if (loadingOverlay) {
-    loadingOverlay.classList.remove('visible');
+  if (loadingOverlay) loadingOverlay.classList.remove('visible');
+}
+
+function showError(message) {
+  const el = document.getElementById('error-message');
+  if (el) {
+    el.textContent = message;
+    el.style.display = 'block';
+  } else {
+    alert(message); // Fallback
   }
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
-  await userManager.init();
-
-  // Auto-login if verified user already exists with matching IP
   try {
+    await userManager.init();
+
+    // Auto-login flow
     const ipRes = await fetch('https://api.ipify.org?format=json');
     const { ip } = await ipRes.json();
     const allUsers = await userManager.loadUsers();
@@ -36,9 +41,13 @@ window.addEventListener('DOMContentLoaded', async () => {
     console.warn("⚠️ Auto-login check failed:", e.message);
   }
 
-  // Attach login handler
+  // Attach login form handler
   const form = document.getElementById('loginForm');
-  if (form) form.addEventListener('submit', handleLogin);
+  if (form) {
+    form.addEventListener('submit', handleLogin);
+  } else {
+    console.error("❌ Login form not found");
+  }
 });
 
 async function handleLogin(event) {
@@ -68,10 +77,7 @@ async function handleLogin(event) {
     });
 
     const result = await response.json();
-
-    if (!response.ok) {
-      throw new Error(result.error || 'Failed to check user');
-    }
+    if (!response.ok) throw new Error(result.error || 'Failed to check user');
 
     if (result.emailExists && result.ipExists) {
       const row = result.user || {};
@@ -108,13 +114,5 @@ async function handleLogin(event) {
     showError('Something went wrong. Please try again.');
   } finally {
     hideLoading();
-  }
-}
-
-function showError(message) {
-  const el = document.getElementById('error-message');
-  if (el) {
-    el.textContent = message;
-    el.style.display = 'block';
   }
 }
