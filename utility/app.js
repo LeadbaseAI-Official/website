@@ -507,3 +507,4 @@ if (typeof window !== 'undefined') {
 }
 
 console.log('🚀 IndexedDB CRUD Library loaded! Ready to use.');
+export const UserManager = new UserManager();
