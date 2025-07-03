@@ -1,3 +1,5 @@
+import { UserManager } from "../utility/app.js";
+
 const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');
 
@@ -35,7 +37,9 @@ const questions = [
 let currentIndex = 0;
 let answers = [];
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
+  await UserManager.init();
+
   const nextBtn = document.getElementById('nextBtn');
   
   if (nextBtn) {
@@ -86,9 +90,9 @@ function handleNext() {
 }
 
 async function submitAnswers() {
-  const user = JSON.parse(localStorage.getItem('userData') || '{}');
+  const user = await UserManager.get();
 
-  if (!user.email || !user.ip || !user.name || !user.phone) {
+  if (!user?.email || !user?.ip || !user?.name || !user?.phone) {
     alert('Missing user info — please log in again.');
     window.location.href = '../index.html';
     return;
@@ -114,12 +118,11 @@ async function submitAnswers() {
 
     const result = await res.json();
 
-    // ✅ Check for "already exists" case from backend message
     if (!res.ok) {
       if (result?.error?.toLowerCase().includes('already exists')) {
         console.warn('⚠️ User already exists, redirecting to dashboard...');
         user.verified = true;
-        localStorage.setItem('userData', JSON.stringify(user));
+        await UserManager.set(user);
         window.location.href = '../Dashboard/index.html';
         return;
       }
@@ -128,7 +131,7 @@ async function submitAnswers() {
 
     // ✅ Normal case — user submitted successfully
     user.verified = true;
-    localStorage.setItem('userData', JSON.stringify(user));
+    await UserManager.set(user);
     alert('Thanks! Your answers were submitted successfully.');
     window.location.href = '../Dashboard/index.html';
   } catch (err) {
