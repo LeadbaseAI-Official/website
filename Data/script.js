@@ -1,8 +1,8 @@
-import { getUserLimits, saveUserLimits, openDB, clearAllData } from "../utils/indexedDB.js";
-
 const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
+const perPage = 10;
+const maxPagesPerSession = 10;
 let selectedRows = [];
 let dailyLimit = 10;
 let extraLimit = 5;
@@ -23,7 +23,7 @@ function resetSessionIfExpired() {
 
 function incrementPageView() {
   const used = parseInt(sessionStorage.getItem(SESSION_KEY)) || 0;
-  if (used >= 10) return false;
+  if (used >= maxPagesPerSession) return false;
   sessionStorage.setItem(SESSION_KEY, (used + 1).toString());
   return true;
 }
@@ -36,7 +36,9 @@ async function loadPage(page, country) {
 
   try {
     const res = await fetch(`${API_URL}?page=${page}&country=${country}`);
-    if (!res.ok) throw new Error(`Fetch failed: ${res.status}`);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
+    }
 
     const json = await res.json();
     const rows = json.data || [];
@@ -46,7 +48,8 @@ async function loadPage(page, country) {
     renderTable(rows);
     document.getElementById("pageInfo").innerText = `Page ${page} - ${country}`;
   } catch (err) {
-    alert(`❌ Error loading data: ${err.message}`);
+    console.error('Load page error:', err);
+    alert(`Error loading data: ${err.message}. Please try again or contact support.`);
   }
 }
 
@@ -60,14 +63,21 @@ function renderTable(rows) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
 
-  rows.forEach(row => {
-    const [id, name, phone, email, bio, facebookLink] = row;
-    const rowData = { Name: name, Phone: phone, Email: email, Bio: bio, "Facebook Link": facebookLink };
-
-    const isSelected = selectedRows.some(r => r.Email === email);
+  rows.forEach((row, index) => {
     const tr = document.createElement("tr");
+
+    const [id, name, phone, email, bio, facebookLink] = row;
+    const rowData = {
+      Name: name,
+      Phone: phone,
+      Email: email,
+      Bio: bio,
+      "Facebook Link": facebookLink
+    };
+
+    let isSelected = false;
     tr.innerHTML = `
-      <td><input type="checkbox" data-email="${email}" ${isSelected ? 'checked' : ''}></td>
+      <td><input type="checkbox" data-index="${index}"></td>
       <td>${name}</td>
       <td>${phone}</td>
       <td>${email}</td>
@@ -75,23 +85,15 @@ function renderTable(rows) {
       <td><a href="${facebookLink}" target="_blank">Link</a></td>
     `;
 
-    if (isSelected) tr.classList.add("selected");
+    tr.addEventListener("click", () => {
+      isSelected = !isSelected;
+      tr.classList.toggle("selected", isSelected);
+      tr.querySelector("input").checked = isSelected;
 
-    const checkbox = tr.querySelector('input[type="checkbox"]');
-    checkbox.addEventListener("change", (e) => {
-      if (e.target.checked) {
+      if (isSelected) {
         selectedRows.push(rowData);
-        tr.classList.add("selected");
       } else {
-        selectedRows = selectedRows.filter(r => r.Email !== email);
-        tr.classList.remove("selected");
-      }
-    });
-
-    tr.addEventListener("click", (e) => {
-      if (e.target.type !== "checkbox") {
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event("change"));
+        selectedRows = selectedRows.filter(r => r.Email !== rowData.Email);
       }
     });
 
@@ -99,16 +101,32 @@ function renderTable(rows) {
   });
 }
 
-async function handleDownload() {
-  const allowed = dailyLimit + extraLimit;
-  if (selectedRows.length === 0) return alert("⚠️ Select at least one row.");
-  if (selectedRows.length > allowed) return alert(`❌ Limit exceeded. Max: ${allowed}`);
+function handleDownload() {
+  const totalAllowed = dailyLimit + extraLimit;
+
+  if (selectedRows.length === 0) {
+    alert("⚠️ Please select at least one row.");
+    return;
+  }
+
+  if (selectedRows.length > totalAllowed) {
+    alert(`❌ Limit exceeded! You can only download ${totalAllowed} more rows.`);
+    return;
+  }
 
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
-  const ws = XLSX.utils.json_to_sheet(selectedRows, { header: headers });
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Data");
-  XLSX.writeFile(wb, `selected_data_${selectedCountry}.xlsx`);
+  const csv = [
+    headers.join(","),
+    ...selectedRows.map(row =>
+      headers.map(h => `"${(row[h] || "").replace(/"/g, '""')}"`).join(",")
+    )
+  ].join("\n");
+
+  const blob = new Blob([csv], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `selected_data_${selectedCountry}.csv`;
+  link.click();
 
   const used = selectedRows.length;
   if (used <= dailyLimit) {
@@ -119,14 +137,14 @@ async function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
-  const userData = JSON.parse(localStorage.getItem("userData"));
+  // Update userData in localStorage
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
   userData.daily_limit = dailyLimit;
   userData.extra_limit = extraLimit;
-
-  await saveUserLimits(userData);
+  localStorage.setItem('userData', JSON.stringify(userData));
 
   selectedRows = [];
-  alert(`✅ Downloaded ${used} rows. Remaining: ${dailyLimit + extraLimit}`);
+  alert(`✅ Downloaded ${used} rows. Remaining limit: ${dailyLimit + extraLimit}`);
 }
 
 function showCountrySelection() {
@@ -143,40 +161,28 @@ function showDataTable() {
   document.querySelector(".footer-controls").style.display = "flex";
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-  await openDB();
-
-  const localUser = JSON.parse(localStorage.getItem("userData") || "{}");
-  if (!localUser.email || !localUser.ip) {
-    alert("Please log in.");
-    return setTimeout(() => location.href = "../login/index.html", 2000);
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize limits from userData in localStorage
+  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  if (!userData.email || !userData.ip) {
+    alert('Please log in to access the data dashboard.');
+    setTimeout(() => window.location.href = 'index.html', 2000);
+    return;
   }
-
-  const limits = await getUserLimits(localUser.email);
-  if (limits) {
-    dailyLimit = limits.daily_limit ?? 100;
-    extraLimit = limits.extra_limit ?? 0;
-  } else {
-    dailyLimit = 100;
-    extraLimit = 0;
-    await saveUserLimits({
-      email: localUser.email,
-      daily_limit: dailyLimit,
-      extra_limit: extraLimit,
-      last_reset_date: new Date().toISOString().split("T")[0]
-    });
-  }
+  dailyLimit = userData.daily_limit !== undefined ? userData.daily_limit : 10;
+  extraLimit = userData.extra_limit !== undefined ? userData.extra_limit : 5;
 
   resetSessionIfExpired();
 
-  document.querySelectorAll(".country-btn").forEach(btn =>
-    btn.addEventListener("click", () => {
-      selectedCountry = btn.dataset.country;
+  const countryButtons = document.querySelectorAll(".country-btn");
+  countryButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      selectedCountry = button.dataset.country;
       currentPage = 1;
       loadPage(currentPage, selectedCountry);
       showDataTable();
-    })
-  );
+    });
+  });
 
   document.getElementById("nextPage").addEventListener("click", () => {
     currentPage++;
@@ -199,30 +205,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   document.getElementById("downloadBtn").addEventListener("click", handleDownload);
 
-  window.addEventListener("beforeunload", async () => {
-    const userData = await getUserLimits(localUser.email);
-    if (userData) {
-      navigator.sendBeacon(`${API_URL.replace("/data", "")}/update-user-limits`, JSON.stringify(userData));
-    }
-  });
+  document.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("selectstart", e => e.preventDefault());
 
   showCountrySelection();
 });
 
-// Logout handler
-const logoutButton = document.querySelector('a[href="../index.html"]');
-if (logoutButton) {
-  logoutButton.addEventListener("click", async (e) => {
-    e.preventDefault();
-    const user = JSON.parse(localStorage.getItem("userData") || "{}");
-    await fetch(`${API_URL.replace("/data", "")}/update-user-limits`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: user.email, ip: user.ip, daily_limit: dailyLimit, extra_limit: extraLimit })
+  // Handle logout button click
+  const logoutButton = document.querySelector('a[href="index.html"]');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', async (e) => {
+      e.preventDefault(); // Prevent immediate navigation
+      await sendLogoutData(userData); // Send user data to server
+      clearStorage(); // Clear localStorage and sessionStorage
+      window.location.href = 'index.html'; // Redirect to index.html
     });
-    await clearAllData(user.email);
-    localStorage.removeItem("userData");
-    sessionStorage.clear();
-    window.location.href = "../index.html";
-  });
-}
+  };

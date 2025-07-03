@@ -9,82 +9,70 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Sidebar */
 .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #00b4ff 0%, #007bff 100%);
+  background: linear-gradient(180deg, #00b4ff 0%, #005bbb 100%);
   color: #fff;
-  padding: 32px 24px;
+  padding: 40px 24px;
   height: 100vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 6px 0 24px rgba(0, 0, 0, 0.15);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
   flex-shrink: 0;
+  transition: transform 0.3s ease-in-out;
 }
 
-/* Sidebar Logo */
-.sidebar-logo {
-  width: 120px;
-  height: auto;
-  display: block;
-  margin: 0 0 20px auto;
-}
-
-/* Sidebar Title */
 .sidebar h2 {
-  background: rgb(255, 255, 255);
-  color: #000000;
-  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
+  font-size: 1.5rem;
   font-weight: 700;
-  padding: 16px 24px;
-  border-radius: 16px;
-  margin-bottom: 40px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  margin: 0 0 48px 0;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  letter-spacing: 0.02em;
 }
 
-/* Sidebar Menu */
 .sidebar-menu {
   list-style: none;
   padding: 0;
   margin: 0;
   width: 100%;
+  flex-grow: 1;
 }
 
 .sidebar-menu li {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .sidebar-menu a {
   display: flex;
   align-items: center;
-  padding: 14px 20px;
+  padding: 16px 24px;
   font-weight: 600;
-  font-size: 1.05rem;
-  border-radius: 12px;
+  font-size: 1.1rem;
+  border-radius: 10px;
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   text-decoration: none;
   position: relative;
-  overflow: hidden;
-  transition: background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s ease;
+  gap: 12px;
 }
 
-.sidebar-menu a:hover {
-  background: rgba(255, 255, 255, 0.95);
-  color: #007bff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
+.sidebar-menu a:hover,
 .sidebar-menu a.active {
-  background: rgba(255, 255, 255, 0.95);
-  color: #007bff !important;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.98);
+  color: #005bbb;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: translateX(4px);
 }
 
 .sidebar-menu a::before {
@@ -96,32 +84,14 @@ body {
   height: 100%;
   background: #fff;
   transform: scaleY(0);
+  transform-origin: bottom;
   transition: transform 0.3s ease;
-}
-
-.sidebar-menu a:hover,
-.sidebar-menu a.active {
-  background: rgba(255, 255, 255, 0.95);
-  color: #007bff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
 }
 
 .sidebar-menu a:hover::before,
 .sidebar-menu a.active::before {
   transform: scaleY(1);
 }
-
-/* Sidebar User Info */
-.sidebar-user {
-  margin-top: auto;
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
-  padding: 20px;
-  border-radius: 16px;
-  color: #fff;
-  font-size: 0.95rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
 
 .main-content {
   margin-left: 280px;
@@ -163,51 +133,16 @@ body {
   color: #333;
 }
 
-.affiliate-link-container {
-  display: flex;
-  margin-bottom: 20px;
-}
-
 .affiliate-input {
-  flex-grow: 1;
+  width: 100%;
   padding: 14px 16px;
-  border-radius: 10px 0 0 10px;
+  border-radius: 10px;
   border: 1px solid #d1d5db;
   font-size: 1rem;
+  margin-bottom: 20px;
   background: #fafafa;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   cursor: default;
-  border-right: none; /* Remove right border for seamless look */
-}
-
-.affiliate-input:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
-}
-
-.affiliate-btn {
-  width: 100%;
-  padding: 14px 32px;
-  background: linear-gradient(135deg, #00b4ff 0%, #005bbb 100%);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1.05rem;
-  transition: all 0.3s ease;
-}
-
-.affiliate-btn.copy-btn {
-  width: auto; /* Adjust width for copy button */
-  border-radius: 0 10px 10px 0; /* Rounded corners only on right */
-  padding: 14px 20px;
-  background: linear-gradient(135deg, #28a745 0%, #218838 100%); /* Green for copy */
-}
-
-.affiliate-btn.copy-btn:hover {
-  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
 }
 
 .affiliate-input:focus {
