@@ -34,7 +34,7 @@
   </div>
 
   <script type="module">
-    import { getUserLimits, clearAllData } from "../utils/indexedDB.js";
+    import { getUserLimits, clearAllData } from "../utils/app.js";
 
     document.getElementById("generateBtn").addEventListener("click", async () => {
       const userData = await getUserLimits();
@@ -45,7 +45,7 @@
       }
 
       const encoded = encodeURIComponent(userData.email);
-      const link = `https://leadbaseai.in/login.html?affiliate=${encoded}`;
+      const link = `https://leadbaseai.in/login/index.html?affiliate=${encoded}`;
       document.getElementById("refLink").value = link;
     });
 
