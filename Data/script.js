@@ -4,18 +4,19 @@ const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
 let selectedRows = [];
-let dailyLimit = 10;
-let extraLimit = 5;
 let totalRowCount = 0;
 let selectedCountry = null;
+
+let dailyLimit = 10;
+let extraLimit = 5;
 
 const SESSION_KEY = "leadbase_pages";
 const SESSION_TIME_KEY = "leadbase_last_reset";
 
 function resetSessionIfExpired() {
   const now = Date.now();
-  const last = sessionStorage.getItem(SESSION_TIME_KEY);
-  if (!last || now - parseInt(last) > 6 * 60 * 60 * 1000) {
+  const last = parseInt(sessionStorage.getItem(SESSION_TIME_KEY)) || 0;
+  if (!last || now - last > 6 * 60 * 60 * 1000) {
     sessionStorage.setItem(SESSION_TIME_KEY, now.toString());
     sessionStorage.setItem(SESSION_KEY, "0");
   }
@@ -44,7 +45,7 @@ async function loadPage(page, country) {
     renderTable(rows);
     document.getElementById("pageInfo").innerText = `Page ${page} - ${country}`;
   } catch (err) {
-    console.error('Load page error:', err);
+    console.error("Load page error:", err);
     alert(`Error loading data: ${err.message}`);
   }
 }
@@ -93,6 +94,7 @@ function renderTable(rows) {
 
 async function handleDownload() {
   const allowed = dailyLimit + extraLimit;
+
   if (selectedRows.length === 0) {
     alert("⚠️ Please select at least one row.");
     return;
@@ -103,6 +105,7 @@ async function handleDownload() {
     return;
   }
 
+  // ✅ Create and trigger download
   const headers = ["Name", "Phone", "Email", "Bio", "Facebook Link"];
   const csv = [
     headers.join(","),
@@ -115,6 +118,7 @@ async function handleDownload() {
   link.download = `selected_data_${selectedCountry}.csv`;
   link.click();
 
+  // ✅ Deduct and persist limits
   const used = selectedRows.length;
   if (used <= dailyLimit) {
     dailyLimit -= used;
@@ -147,18 +151,22 @@ function showDataTable() {
   document.querySelector(".footer-controls").style.display = "flex";
 }
 
+// === MAIN ENTRY POINT ===
 document.addEventListener("DOMContentLoaded", async () => {
   const user = await userManager.get();
-  if (!user?.email || !user?.ip) {
-    alert('Please log in to access the data dashboard.');
+
+  if (!user?.email || !user?.ip || !user?.verified) {
+    alert("Please log in first.");
     return window.location.href = "index.html";
   }
 
+  // ✅ Load persisted limits
   dailyLimit = user.daily_limit ?? 10;
   extraLimit = user.extra_limit ?? 5;
 
   resetSessionIfExpired();
 
+  // === UI Events ===
   document.querySelectorAll(".country-btn").forEach(btn =>
     btn.addEventListener("click", () => {
       selectedCountry = btn.dataset.country;
@@ -187,17 +195,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById("downloadBtn").addEventListener("click", handleDownload);
+
   document.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("selectstart", e => e.preventDefault());
 
-  showCountrySelection();
+  showCountrySelection(); // Initial screen
 });
 
+// === LOGOUT ===
 const logoutButton = document.querySelector('a[href="index.html"]');
 if (logoutButton) {
-  logoutButton.addEventListener("click", async e => {
+  logoutButton.addEventListener("click", async (e) => {
     e.preventDefault();
-    const user = await userManager.get();
     await userManager.clearAllUsers();
     window.location.href = "index.html";
   });
