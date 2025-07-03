@@ -1,4 +1,4 @@
-import { userManager } from "../utility/app.js";
+import { userManager } from "../utility/app.js?v=2";
 
 const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');

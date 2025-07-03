@@ -229,3 +229,4 @@ class UserManager {
 // === Proper ES Module Export ===
 export { IndexedDBCRUD, UserManager };
 export const userManager = new UserManager();
+// Minor change to force browser refresh (attempt 4)

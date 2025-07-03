@@ -2,7 +2,7 @@ const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');
 
 // Correct import: import the instance, not the class
-import { userManager } from '../utility/app.js'; // ✅ FIXED
+import { userManager } from '../utility/app.js?v=2'; // ✅ FIXED
 
 function showLoading() {
   if (loadingOverlay) loadingOverlay.classList.add('visible');
