@@ -55,20 +55,31 @@ function updateRowCount() {
   if (!h2.dataset.originalText) h2.dataset.originalText = h2.innerText;
   h2.innerText = `${h2.dataset.originalText.split("(")[0].trim()} (Total: ${totalRowCount})`;
 }
-
 function renderTable(rows) {
   const tbody = document.querySelector("tbody");
   tbody.innerHTML = "";
 
   rows.forEach((row, index) => {
+    const [name, email, phone, bio, facebookLink] = row;
+
+    // ✅ Dynamically generate ID (e.g. row number)
+    const id = index + 1;
+
+    const rowData = {
+      ID: id,
+      Name: name,
+      Phone: phone,
+      Email: email,
+      Bio: bio,
+      "Facebook Link": facebookLink
+    };
+
     const tr = document.createElement("tr");
-
-    const [id, name, phone, email, bio, facebookLink] = row;
-    const rowData = { Name: name, Phone: phone, Email: email, Bio: bio, "Facebook Link": facebookLink };
-
     let isSelected = false;
+
     tr.innerHTML = `
       <td><input type="checkbox" data-index="${index}"></td>
+      <td>${id}</td>
       <td>${name}</td>
       <td>${phone}</td>
       <td>${email}</td>
@@ -91,6 +102,7 @@ function renderTable(rows) {
     tbody.appendChild(tr);
   });
 }
+
 
 async function handleDownload() {
   const allowed = dailyLimit + extraLimit;
