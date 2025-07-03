@@ -4,7 +4,6 @@ const loadingOverlay = document.getElementById('loadingOverlay');
 // Import UserManager from utility/app.js
 import { UserManager } from '../utility/app.js';
 
-const userManager = new UserManager();
 
 function showLoading() {
   if (loadingOverlay) {

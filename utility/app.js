@@ -503,7 +503,6 @@ if (typeof module !== 'undefined' && module.exports) {
 // For browser usage, attach to window
 if (typeof window !== 'undefined') {
   window.IndexedDBCRUD = IndexedDBCRUD;
-  window.UserManager = UserManager;
 }
 
 console.log('🚀 IndexedDB CRUD Library loaded! Ready to use.');
