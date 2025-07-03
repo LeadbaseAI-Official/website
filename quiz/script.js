@@ -38,16 +38,21 @@ let currentIndex = 0;
 let answers = [];
 
 window.addEventListener('DOMContentLoaded', async () => {
-  await UserManager.init();
+  const user = await UserManager.get();
+
+  if (!user?.email || !user?.ip || !user?.name || !user?.phone) {
+    alert('Missing user info — please log in again.');
+    window.location.href = '../index.html';
+    return;
+  }
 
   const nextBtn = document.getElementById('nextBtn');
-  
   if (nextBtn) {
     nextBtn.addEventListener('click', handleNext);
   } else {
     console.error('Next button not found!');
   }
-  
+
   loadQuestion();
 });
 
@@ -64,11 +69,13 @@ function loadQuestion() {
     btn.className = 'option-btn';
     btn.textContent = opt;
     btn.dataset.value = label;
+
     btn.addEventListener('click', () => {
       document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       document.getElementById('nextBtn').disabled = false;
     });
+
     optionsDiv.appendChild(btn);
   });
 
@@ -78,10 +85,10 @@ function loadQuestion() {
 function handleNext() {
   const sel = document.querySelector('.option-btn.selected');
   if (!sel) return;
-  
+
   answers.push(sel.dataset.value);
   currentIndex++;
-  
+
   if (currentIndex < questions.length) {
     loadQuestion();
   } else {
@@ -129,13 +136,12 @@ async function submitAnswers() {
       throw new Error(result.error || 'Failed to submit answers');
     }
 
-    // ✅ Normal case — user submitted successfully
     user.verified = true;
     await UserManager.set(user);
-    alert('Thanks! Your answers were submitted successfully.');
+    alert('✅ Thanks! Your answers were submitted successfully.');
     window.location.href = '../Dashboard/index.html';
   } catch (err) {
-    console.error('Submit error:', err);
+    console.error('❌ Submit error:', err);
     alert('Submission failed. Please check your connection and try again.');
   } finally {
     hideLoading();
