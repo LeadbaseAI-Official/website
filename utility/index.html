@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>IndexedDB User Manager</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f8faff;
+    }
+    input, button {
+      margin: 5px 0;
+      padding: 8px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .user-card {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 10px 0;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    }
+    button {
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>User Form</h2>
+  <form id="userForm">
+    <input type="text" id="name" placeholder="Full Name" required><br>
+    <input type="email" id="email" placeholder="Email" required><br>
+    <input type="text" id="ip" placeholder="IP Address"><br>
+    <input type="text" id="phone" placeholder="Phone Number"><br>
+    <input type="number" id="daily_limit" placeholder="Daily Limit"><br>
+    <input type="number" id="extra_limit" placeholder="Extra Limit"><br>
+    <input type="text" id="ref_source" placeholder="Referral Source"><br>
+    <label>
+      <input type="checkbox" id="verified"> Verified
+    </label><br>
+    <button type="submit">Save User</button>
+  </form>
+
+  <button id="loadUsers">🔄 Load All Users</button>
+  <button id="clearAll">🗑 Clear All Users</button>
+
+  <h3>Stored Users</h3>
+  <div id="userList"></div>
+
+  <script src="app.js"></script>
+  <script>
+    const manager = new UserManager();
+
+    async function renderUsers() {
+      const users = await manager.loadUsers();
+      const container = document.getElementById('userList');
+      container.innerHTML = "";
+
+      if (users.length === 0) {
+        container.innerHTML = "<p>No users found.</p>";
+        return;
+      }
+
+      users.forEach(user => {
+        const div = document.createElement("div");
+        div.className = "user-card";
+        div.innerHTML = `
+          <strong>${user.name}</strong><br>
+          <b>Email:</b> ${user.email}<br>
+          <b>IP:</b> ${user.ip}<br>
+          <b>Phone:</b> ${user.phone}<br>
+          <b>Limits:</b> ${user.daily_limit} + ${user.extra_limit}<br>
+          <b>Verified:</b> ${user.verified}<br>
+          <b>Referral:</b> ${user.ref_source || 'N/A'}<br>
+          <b>Affiliates:</b> ${user.affiliates}<br>
+          <button onclick='editUser(${JSON.stringify(user)})'>✏ Edit</button>
+          <button onclick='deleteUser("${user.email}")'>❌ Delete</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function editUser(user) {
+      document.getElementById("name").value = user.name || "";
+      document.getElementById("email").value = user.email || "";
+      document.getElementById("email").disabled = true;
+      document.getElementById("ip").value = user.ip || "";
+      document.getElementById("phone").value = user.phone || "";
+      document.getElementById("daily_limit").value = user.daily_limit || 0;
+      document.getElementById("extra_limit").value = user.extra_limit || 0;
+      document.getElementById("ref_source").value = user.ref_source || "";
+      document.getElementById("verified").checked = !!user.verified;
+    }
+
+    async function deleteUser(email) {
+      await manager.deleteUser(email);
+      renderUsers();
+    }
+
+    document.getElementById("userForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const userData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        ip: document.getElementById("ip").value,
+        phone: document.getElementById("phone").value,
+        daily_limit: parseInt(document.getElementById("daily_limit").value) || 0,
+        extra_limit: parseInt(document.getElementById("extra_limit").value) || 0,
+        ref_source: document.getElementById("ref_source").value || null,
+        verified: document.getElementById("verified").checked,
+      };
+
+      await manager.saveUser(userData);
+      document.getElementById("userForm").reset();
+      document.getElementById("email").disabled = false;
+      renderUsers();
+    });
+
+    document.getElementById("clearAll").addEventListener("click", async () => {
+      if (confirm("Clear all users?")) {
+        await manager.clearAllUsers();
+        renderUsers();
+      }
+    });
+
+    document.getElementById("loadUsers").addEventListener("click", renderUsers);
+
+    // Init database and load data
+    (async () => {
+      await manager.init();
+      renderUsers();
+    })();
+  </script>
+</body>
+</html>

@@ -11,6 +11,34 @@
   <link rel="icon" type="image/png" sizes="192x192" href="../icons/192-192.png">
 </head>
 <body>
+
+  <!-- ✅ Green Notification Banner -->
+  <div class="session-alert">
+    ✅ You can only visit 10 pages in every 6 hours
+  </div>
+  <style>
+    .session-alert {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: #d4edda;
+      color: #155724;
+      padding: 12px 20px;
+      border-radius: 6px;
+      border: 1px solid #c3e6cb;
+      font-weight: 600;
+      z-index: 10000;
+      animation: fadeOut 4s ease-in-out forwards;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    @keyframes fadeOut {
+      0%   { opacity: 0; }
+      50%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+  </style>
+
   <div class="dashboard-container">
     <aside class="sidebar">
       <h2>Data Dashboard</h2>
@@ -63,9 +91,11 @@
           <button id="nextPage">Next ⟩</button>
         </div>
         <button id="downloadBtn">Download Selected</button>
+        <button id="backToCountries" style="display: none;">⬅ Back to Countries</button>
       </div>
     </main>
   </div>
+
   <script src="script.js"></script>
 </body>
 </html>

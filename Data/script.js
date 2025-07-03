@@ -1,3 +1,5 @@
+import { UserManager } from "../utils/indexedDB.js";
+
 const API_URL = "https://api.leadbaseai.in/data";
 
 let currentPage = 1;
@@ -36,9 +38,7 @@ async function loadPage(page, country) {
 
   try {
     const res = await fetch(`${API_URL}?page=${page}&country=${country}`);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`Failed to fetch data: ${res.status} ${res.statusText}`);
 
     const json = await res.json();
     const rows = json.data || [];
@@ -101,7 +101,7 @@ function renderTable(rows) {
   });
 }
 
-function handleDownload() {
+async function handleDownload() {
   const totalAllowed = dailyLimit + extraLimit;
 
   if (selectedRows.length === 0) {
@@ -137,11 +137,11 @@ function handleDownload() {
     extraLimit = Math.max(0, extraLimit - excess);
   }
 
-  // Update userData in localStorage
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+  // Update user data in IndexedDB
+  const userData = await UserManager.get();
   userData.daily_limit = dailyLimit;
   userData.extra_limit = extraLimit;
-  localStorage.setItem('userData', JSON.stringify(userData));
+  await UserManager.set(userData);
 
   selectedRows = [];
   alert(`✅ Downloaded ${used} rows. Remaining limit: ${dailyLimit + extraLimit}`);
@@ -161,14 +161,15 @@ function showDataTable() {
   document.querySelector(".footer-controls").style.display = "flex";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize limits from userData in localStorage
-  const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  if (!userData.email || !userData.ip) {
+document.addEventListener("DOMContentLoaded", async () => {
+  const userData = await UserManager.get();
+
+  if (!userData?.email || !userData?.ip) {
     alert('Please log in to access the data dashboard.');
     setTimeout(() => window.location.href = 'index.html', 2000);
     return;
   }
+
   dailyLimit = userData.daily_limit !== undefined ? userData.daily_limit : 10;
   extraLimit = userData.extra_limit !== undefined ? userData.extra_limit : 5;
 
@@ -211,13 +212,13 @@ document.addEventListener("DOMContentLoaded", () => {
   showCountrySelection();
 });
 
-  // Handle logout button click
-  const logoutButton = document.querySelector('a[href="index.html"]');
-  if (logoutButton) {
-    logoutButton.addEventListener('click', async (e) => {
-      e.preventDefault(); // Prevent immediate navigation
-      await sendLogoutData(userData); // Send user data to server
-      clearStorage(); // Clear localStorage and sessionStorage
-      window.location.href = 'index.html'; // Redirect to index.html
-    });
-  };
+const logoutButton = document.querySelector('a[href="index.html"]');
+if (logoutButton) {
+  logoutButton.addEventListener('click', async (e) => {
+    e.preventDefault();
+    const userData = await UserManager.get();
+    await sendLogoutData(userData);
+    clearStorage(); // this should clear IndexedDB or session, depending on your `app.js`
+    window.location.href = 'index.html';
+  });
+}
