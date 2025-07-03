@@ -87,14 +87,14 @@ function handleNext() {
 
 async function submitAnswers() {
   const user = JSON.parse(localStorage.getItem('userData') || '{}');
-  
+
   if (!user.email || !user.ip || !user.name || !user.phone) {
     alert('Missing user info — please log in again.');
     window.location.href = '../index.html';
     return;
   }
 
-  showLoading(); // Show loading spinner
+  showLoading();
 
   const payload = {
     email: user.email,
@@ -114,10 +114,19 @@ async function submitAnswers() {
 
     const result = await res.json();
 
+    // ✅ Check for "already exists" case from backend message
     if (!res.ok) {
+      if (result?.error?.toLowerCase().includes('already exists')) {
+        console.warn('⚠️ User already exists, redirecting to dashboard...');
+        user.verified = true;
+        localStorage.setItem('userData', JSON.stringify(user));
+        window.location.href = '../Dashboard/index.html';
+        return;
+      }
       throw new Error(result.error || 'Failed to submit answers');
     }
 
+    // ✅ Normal case — user submitted successfully
     user.verified = true;
     localStorage.setItem('userData', JSON.stringify(user));
     alert('Thanks! Your answers were submitted successfully.');
@@ -126,6 +135,6 @@ async function submitAnswers() {
     console.error('Submit error:', err);
     alert('Submission failed. Please check your connection and try again.');
   } finally {
-    hideLoading(); // Ensure loading spinner is hidden
+    hideLoading();
   }
 }
