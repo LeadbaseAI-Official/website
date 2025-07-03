@@ -1,118 +1,104 @@
 const API_URL = "https://api.leadbaseai.in";
-const loadingOverlay = document.getElementById('loadingOverlay');
+import { userManager } from '../utility/app.js';
 
-// Correct import: import the instance, not the class
-import { userManager } from '../utility/app.js?v=2'; // ✅ FIXED
+const loadingOverlay = document.getElementById('loadingOverlay');
 
 function showLoading() {
   if (loadingOverlay) loadingOverlay.classList.add('visible');
 }
-
 function hideLoading() {
   if (loadingOverlay) loadingOverlay.classList.remove('visible');
 }
-
-function showError(message) {
+function showError(msg) {
   const el = document.getElementById('error-message');
   if (el) {
-    el.textContent = message;
+    el.textContent = msg;
     el.style.display = 'block';
   } else {
-    alert(message); // Fallback
+    alert(msg);
   }
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function getIP() {
+  const res = await fetch('https://api.ipify.org?format=json');
+  const data = await res.json();
+  return data.ip;
+}
+
+async function autoLogin() {
   try {
     await userManager.init();
+    const ip = await getIP();
+    const users = await userManager.db.readAll();
+    const verifiedUser = users.find(u => u.ip === ip && u.verified);
 
-    // Auto-login flow
-    const ipRes = await fetch('https://api.ipify.org?format=json');
-    const { ip } = await ipRes.json();
-    const allUsers = await userManager.loadUsers();
-
-    const existingUser = allUsers.find(u => u.ip === ip && u.verified === true);
-    if (existingUser) {
-      console.log("✅ Auto-redirecting verified user:", existingUser.email);
+    if (verifiedUser) {
+      console.log("✅ Auto-login: Redirecting user", verifiedUser.email);
       window.location.href = '../Dashboard/index.html';
-      return;
+      return true;
     }
-  } catch (e) {
-    console.warn("⚠️ Auto-login check failed:", e.message);
+  } catch (err) {
+    console.warn("⚠️ Auto-login error:", err.message);
   }
-
-  // Attach login form handler
-  const form = document.getElementById('loginForm');
-  if (form) {
-    form.addEventListener('submit', handleLogin);
-  } else {
-    console.error("❌ Login form not found");
-  }
-});
+  return false;
+}
 
 async function handleLogin(event) {
   event.preventDefault();
+  showLoading();
 
   const email = document.getElementById('email').value.trim();
   const name = document.getElementById('name').value.trim();
   const phone = document.getElementById('phone').value.trim();
 
-  if (!email || !name || !phone) return showError('Please fill in all fields.');
-  if (!/^\S+@\S+\.\S+$/.test(email)) return showError('Please enter a valid email address.');
-  if (!/^\+?\d{10,15}$/.test(phone)) {
-    hideLoading();
-    return showError('Please enter a valid phone number.');
-  }
-
-  showLoading();
+  if (!email || !name || !phone) return showError('Please fill all fields.');
+  if (!/^\S+@\S+\.\S+$/.test(email)) return showError('Invalid email format.');
+  if (!/^\+?\d{10,15}$/.test(phone)) return showError('Invalid phone number.');
 
   try {
-    const ipRes = await fetch('https://api.ipify.org?format=json');
-    const { ip } = await ipRes.json();
-
-    const response = await fetch(`${API_URL}/check-user`, {
+    const ip = await getIP();
+    const res = await fetch(`${API_URL}/check-user`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, ip })
     });
 
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || 'Failed to check user');
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.error || "User check failed");
 
-    if (result.emailExists && result.ipExists) {
-      const row = result.user || {};
-      const userData = {
-        email,
-        ip,
-        name: row.name || name,
-        phone: row.phone || phone,
-        verified: true,
-        daily_limit: parseInt(row.daily_limit) || 100,
-        extra_limit: parseInt(row.extra_limit) || 0,
-        affiliates: parseInt(row.affiliate) || 0
-      };
-      await userManager.saveUser(userData);
-      window.location.href = '../Dashboard/index.html';
-    } else if (result.ipExists && !result.emailExists) {
-      showError('Your one account already exists, please login with that.');
+    const row = result.user || {};
+    const userData = {
+      email,
+      ip,
+      name: row.name || name,
+      phone: row.phone || phone,
+      verified: result.emailExists && result.ipExists,
+      daily_limit: parseInt(row.daily_limit) || 100,
+      extra_limit: parseInt(row.extra_limit) || 0,
+      affiliates: parseInt(row.affiliate) || 0
+    };
+
+    await userManager.saveUser(userData);
+
+    if (userData.verified) {
+      window.location.href = "../Dashboard/index.html";
     } else {
-      const userData = {
-        email,
-        ip,
-        name,
-        phone,
-        verified: false,
-        daily_limit: 100,
-        extra_limit: 0,
-        affiliates: 0
-      };
-      await userManager.saveUser(userData);
-      window.location.href = '../quiz/index.html';
+      window.location.href = "../quiz/index.html";
     }
+
   } catch (err) {
-    console.error('Login error:', err);
-    showError('Something went wrong. Please try again.');
+    console.error("❌ Login failed:", err);
+    showError("Something went wrong. Please try again.");
   } finally {
     hideLoading();
   }
 }
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const loggedIn = await autoLogin();
+  if (!loggedIn) {
+    const form = document.getElementById('loginForm');
+    if (form) form.addEventListener('submit', handleLogin);
+    else console.error("❌ Login form not found");
+  }
+});
