@@ -1,4 +1,4 @@
-import { getUserLimits, clearAllData } from "../utils/indexedDB.js";
+import { getUserLimits, clearAllData } from "../utils/app.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const generateBtn = document.getElementById("generateBtn");

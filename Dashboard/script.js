@@ -4,6 +4,7 @@ const API_URL = "https://api.leadbaseai.in";
 const SESSION_KEY = "leadbase_user_fetch";
 const SESSION_TIME_KEY = "leadbase_last_fetch";
 
+// Resets session every 6 hours
 function resetFetchIfExpired() {
   const now = Date.now();
   const last = sessionStorage.getItem(SESSION_TIME_KEY);
@@ -15,7 +16,8 @@ function resetFetchIfExpired() {
   return false;
 }
 
-async function fetchAffiliate(email, ip) {
+// Fetch limits + affiliates from server
+async function fetchUserLimits(email, ip) {
   try {
     const response = await fetch(`${API_URL}/check-user`, {
       method: "POST",
@@ -24,27 +26,25 @@ async function fetchAffiliate(email, ip) {
     });
 
     const result = await response.json();
+    if (!response.ok) throw new Error(result.error || "Failed to fetch");
 
-    if (!response.ok) {
-      throw new Error(result.error || "Failed to fetch affiliate data");
-    }
-
-    if (result.emailExists && result.ipExists) {
+    if (result.emailExists && result.ipExists && result.user) {
       return {
+        daily_limit: parseInt(result.user.daily_limit) || 100,
+        extra_limit: parseInt(result.user.extra_limit) || 0,
         affiliates: parseInt(result.user.affiliate) || 0,
-        daily_limit: result.user.daily_limit || 100,
-        extra_limit: result.user.extra_limit || 0,
+        name: result.user.name || "",
       };
-    } else {
-      throw new Error("User not found");
     }
+
+    throw new Error("User not found");
   } catch (err) {
-    console.error("Fetch affiliate error:", err);
-    showError("Failed to fetch data. Using cached values.");
+    console.error("⚠️ Failed to fetch user limits:", err.message);
     return null;
   }
 }
 
+// Show error on page
 function showError(message) {
   const el = document.getElementById("error-message");
   if (el) {
@@ -53,32 +53,29 @@ function showError(message) {
   }
 }
 
+// MAIN: Run when page loads
 document.addEventListener("DOMContentLoaded", async () => {
-  const userData = await UserManager.get();
+  await UserManager.init();
 
-  if (!userData?.email || !userData?.ip) {
+  const localUser = await UserManager.get();
+  if (!localUser?.email || !localUser?.ip) {
     showError("Please log in to access the dashboard.");
     setTimeout(() => (window.location.href = "index.html"), 2000);
     return;
   }
 
-  document.getElementById("username").textContent = userData.name || "User";
+  document.getElementById("username").textContent = localUser.name || "User";
 
   const shouldFetch = resetFetchIfExpired();
   if (shouldFetch) {
-    const fetchedData = await fetchAffiliate(userData.email, userData.ip);
-    if (fetchedData !== null) {
-      userData.affiliates = fetchedData.affiliates;
-      userData.daily_limit = fetchedData.daily_limit;
-      userData.extra_limit = fetchedData.extra_limit;
-      await UserManager.set(userData);
-      sessionStorage.setItem(SESSION_KEY, "1");
+    const fresh = await fetchUserLimits(localUser.email, localUser.ip);
+    if (fresh) {
+      const updatedUser = { ...localUser, ...fresh };
+      await UserManager.set(updatedUser);
     }
   }
 
-  // Load data from IndexedDB (whether updated or not)
   const finalUser = await UserManager.get();
-
   document.getElementById("daily-limit").textContent =
     finalUser.daily_limit ?? 100;
   document.getElementById("extra-limit").textContent =
@@ -92,7 +89,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     logoutButton.addEventListener("click", async (e) => {
       e.preventDefault();
       await sendLogoutData(finalUser);
-      clearStorage(); // should also clear IndexedDB inside this
+      clearStorage(); // Clears IndexedDB/session
       window.location.href = "index.html";
     });
   }

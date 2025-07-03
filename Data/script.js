@@ -1,4 +1,4 @@
-import { UserManager } from "../utils/indexedDB.js";
+import { UserManager } from "../utils/app.js";
 
 const API_URL = "https://api.leadbaseai.in/data";
 
