@@ -218,6 +218,12 @@ class UserManager {
   async getVerifiedUsers() {
     return await this.db.filter(user => user.verified);
   }
+
+  // Added to retrieve the current user, assuming it's the first one in the DB
+  async get() {
+    const users = await this.db.readAll();
+    return users.length > 0 ? users[0] : null;
+  }
 }
 
 // === Proper ES Module Export ===

@@ -1,4 +1,4 @@
-import { UserManager } from "../utility/app.js";
+import { userManager } from "../utility/app.js";
 
 const API_URL = "https://api.leadbaseai.in";
 const loadingOverlay = document.getElementById('loadingOverlay');
@@ -38,11 +38,12 @@ let currentIndex = 0;
 let answers = [];
 
 window.addEventListener('DOMContentLoaded', async () => {
-  const user = await UserManager.get();
+  await userManager.init(); // Initialize the userManager
+  const user = await userManager.get();
 
   if (!user?.email || !user?.ip || !user?.name || !user?.phone) {
     alert('Missing user info — please log in again.');
-    window.location.href = '../index.html';
+    window.location.href = '../login/index.html';
     return;
   }
 
@@ -97,11 +98,11 @@ function handleNext() {
 }
 
 async function submitAnswers() {
-  const user = await UserManager.get();
+  const user = await userManager.get();
 
   if (!user?.email || !user?.ip || !user?.name || !user?.phone) {
     alert('Missing user info — please log in again.');
-    window.location.href = '../index.html';
+    window.location.href = '../login/index.html';
     return;
   }
 
@@ -129,7 +130,7 @@ async function submitAnswers() {
       if (result?.error?.toLowerCase().includes('already exists')) {
         console.warn('⚠️ User already exists, redirecting to dashboard...');
         user.verified = true;
-        await UserManager.set(user);
+        await userManager.saveUser(user); // Save to IndexedDB
         window.location.href = '../Dashboard/index.html';
         return;
       }
@@ -137,7 +138,7 @@ async function submitAnswers() {
     }
 
     user.verified = true;
-    await UserManager.set(user);
+    await userManager.saveUser(user); // Save to IndexedDB
     alert('✅ Thanks! Your answers were submitted successfully.');
     window.location.href = '../Dashboard/index.html';
   } catch (err) {
