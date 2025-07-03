@@ -112,7 +112,7 @@ async function submitAnswers() {
     ip: user.ip,
     name: user.name,
     phone: user.phone,
-    question: answers.join(''),
+    question: answers.join(','),
     affiliate: 0
   };
 
