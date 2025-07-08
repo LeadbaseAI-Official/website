@@ -4,10 +4,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LeadBaseAI</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>LeadBaseAI - Professional Lead Generation Platform</title>
+  <meta name="description" content="Transform your business with verified leads. Join 10,000+ professionals using LeadBaseAI for smart lead generation and affiliate growth.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="apple-touch-icon" sizes="180x180" href="icons/180-180.png">
   <link rel="icon" type="image/png" sizes="32x32" href="icons/32-32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="icons/16-16.png">
@@ -47,68 +48,427 @@ document.addEventListener('DOMContentLoaded', () => {
   </div>
 
 <header>
-  <h1>LeadBaseAI</h1>
-  <div class="hamburger" role="button" aria-label="Toggle navigation" aria-expanded="false">
-    <i class="fas fa-bars"></i>
+  <div class="header-container">
+    <div class="logo-section">
+      <h1><i class="fas fa-chart-line"></i> LeadBaseAI</h1>
+      <span class="tagline">Professional Lead Generation</span>
+    </div>
+    <div class="hamburger" role="button" aria-label="Toggle navigation" aria-expanded="false">
+      <i class="fas fa-bars"></i>
+    </div>
+    <nav class="nav-menu" id="nav-menu">
+      <a href="#features"><i class="fas fa-star"></i> Features</a>
+      <a href="#how"><i class="fas fa-cogs"></i> How It Works</a>
+      <a href="#testimonials"><i class="fas fa-users"></i> Success Stories</a>
+      <a href="#get-started" class="nav-cta">Get Started</a>
+    </nav>
   </div>
-  <nav class="nav-menu" id="nav-menu">
-    <a href="#features">Features</a>
-    <a href="#how">How It Works</a>
-    <a href="#get-started">Start</a>
-  </nav>
 </header>
 
 
   <section class="hero">
-    <div class="container">
-      <h2>Unlock Verified Leads in One Click</h2>
-      <p>Join our Affiliate and get extra 30 limit per new signup. Maintain daily streak of using website for 5 every days and get extra 50 Limits.
-      </p>
-      <a href="../login/index.html" class="cta">Get Started Now</a>
+    <div class="hero-container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <i class="fas fa-shield-alt"></i>
+          <span>Trusted by 10,000+ Professionals</span>
+        </div>
+        <h2>Transform Your Business with <span class="highlight">Verified Leads</span></h2>
+        <p class="hero-subtitle">Access premium lead databases, smart filtering, and powerful affiliate tools. Generate quality leads that convert with our AI-powered platform.</p>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-number">10K+</div>
+            <div class="stat-label">Active Users</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">500K+</div>
+            <div class="stat-label">Leads Generated</div>
+          </div>
+          <div class="stat">
+            <div class="stat-number">98%</div>
+            <div class="stat-label">Success Rate</div>
+          </div>
+        </div>
+
+        <div class="hero-actions">
+          <a href="login/index.html" class="cta-primary">
+            <i class="fas fa-rocket"></i>
+            <span>Start Free Trial</span>
+          </a>
+          <a href="#how" class="cta-secondary">
+            <i class="fas fa-play"></i>
+            <span>Watch Demo</span>
+          </a>
+        </div>
+
+        <div class="hero-features">
+          <div class="feature-item">
+            <i class="fas fa-check"></i>
+            <span>No Setup Required</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check"></i>
+            <span>Instant Access</span>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-check"></i>
+            <span>30-Day Money Back</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="dashboard-preview">
+          <div class="preview-header">
+            <div class="preview-dots">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="preview-title">LeadBaseAI Dashboard</div>
+          </div>
+          <div class="preview-content">
+            <div class="preview-chart">
+              <div class="chart-bar" style="height: 60%"></div>
+              <div class="chart-bar" style="height: 80%"></div>
+              <div class="chart-bar" style="height: 45%"></div>
+              <div class="chart-bar" style="height: 90%"></div>
+              <div class="chart-bar" style="height: 70%"></div>
+            </div>
+            <div class="preview-metrics">
+              <div class="metric">
+                <span class="metric-value">2,847</span>
+                <span class="metric-label">Leads Today</span>
+              </div>
+              <div class="metric">
+                <span class="metric-value">94.2%</span>
+                <span class="metric-label">Quality Score</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   <section class="features" id="features">
-    <h3><h3>Features Designed to Help You Grow</h3></h3>
-    <div class="grid">
-      <div class="card">
-        <h4>Smart Limits</h4>
-        <p>Daily and extra lead usage limits to control flow and upsell easily.</p>
+    <div class="container">
+      <div class="section-header">
+        <h3>Powerful Features Designed for Growth</h3>
+        <p>Everything you need to generate, manage, and convert leads effectively</p>
       </div>
-      <div class="card">
-        <h4>Export & Download</h4>
-        <p>Select and download only what you need. CSV-ready output.</p>
-      </div>
-      <div class="card">
-        <h4>Affiliate System</h4>
-        <p>Built-in tracking for growth through referrals. No complex setup.</p>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-brain"></i>
+          </div>
+          <h4>AI-Powered Targeting</h4>
+          <p>Advanced algorithms identify and qualify leads with 98% accuracy, saving you hours of manual research.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> Smart filtering</span>
+            <span><i class="fas fa-check"></i> Quality scoring</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-download"></i>
+          </div>
+          <h4>Instant Export & Download</h4>
+          <p>Select and download only what you need. CSV-ready output with custom fields and formatting options.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> Multiple formats</span>
+            <span><i class="fas fa-check"></i> Custom fields</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-users"></i>
+          </div>
+          <h4>Advanced Affiliate System</h4>
+          <p>Built-in tracking for growth through referrals. Earn extra limits and commissions with our transparent system.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> Real-time tracking</span>
+            <span><i class="fas fa-check"></i> Instant payouts</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h4>Data Security & Compliance</h4>
+          <p>Enterprise-grade security with GDPR compliance. Your data and your clients' data are always protected.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> GDPR compliant</span>
+            <span><i class="fas fa-check"></i> SSL encrypted</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <h4>Analytics & Insights</h4>
+          <p>Comprehensive dashboard with conversion tracking, ROI analysis, and performance metrics.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> Real-time analytics</span>
+            <span><i class="fas fa-check"></i> ROI tracking</span>
+          </div>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-clock"></i>
+          </div>
+          <h4>24/7 Support</h4>
+          <p>Get help when you need it with our dedicated support team and comprehensive knowledge base.</p>
+          <div class="feature-benefits">
+            <span><i class="fas fa-check"></i> Live chat</span>
+            <span><i class="fas fa-check"></i> Video tutorials</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 
   <section class="how-it-works" id="how">
-    <h3>How It Works</h3>
-    <ol>
-      <li>Login or sign up on LeadSparkAI</li>
-      <li>Browse the trusted database with verified leads</li>
-      <li>Select rows and download instantly</li>
-      <li>Use affiliate links to grow & earn</li>
-    </ol>
+    <div class="container">
+      <div class="section-header">
+        <h3>How It Works</h3>
+        <p>Get started in minutes with our simple 4-step process</p>
+      </div>
+
+      <div class="steps-container">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <i class="fas fa-user-plus"></i>
+            </div>
+            <h4>Sign Up & Verify</h4>
+            <p>Create your account in seconds. Complete our quick verification quiz to access premium features.</p>
+          </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <i class="fas fa-search"></i>
+            </div>
+            <h4>Browse & Filter</h4>
+            <p>Access our verified database of leads. Use advanced filters to find your ideal prospects by industry, location, and more.</p>
+          </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <i class="fas fa-download"></i>
+            </div>
+            <h4>Select & Download</h4>
+            <p>Choose the leads you want and download them instantly in your preferred format. No waiting, no delays.</p>
+          </div>
+        </div>
+
+        <div class="step-connector"></div>
+
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <div class="step-icon">
+              <i class="fas fa-rocket"></i>
+            </div>
+            <h4>Grow & Earn</h4>
+            <p>Use our affiliate system to earn extra limits and commissions. Track your success with detailed analytics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="testimonials" id="testimonials">
+    <div class="container">
+      <div class="section-header">
+        <h3>Trusted by Industry Leaders</h3>
+        <p>See what our customers are saying about LeadBaseAI</p>
+      </div>
+
+      <div class="testimonials-grid">
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p>"LeadBaseAI transformed our lead generation process. We've seen a 300% increase in qualified leads and our conversion rate has doubled."</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <div class="author-name">Sarah Johnson</div>
+              <div class="author-title">Marketing Director, TechCorp</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p>"The affiliate system is incredible. I've earned over $5,000 in commissions while helping other businesses grow. It's a win-win!"</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <div class="author-name">Michael Chen</div>
+              <div class="author-title">Digital Marketing Consultant</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testimonial-card">
+          <div class="testimonial-content">
+            <div class="stars">
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+              <i class="fas fa-star"></i>
+            </div>
+            <p>"The data quality is outstanding. Every lead we've downloaded has been verified and accurate. This platform saves us hours of research."</p>
+          </div>
+          <div class="testimonial-author">
+            <div class="author-avatar">
+              <i class="fas fa-user"></i>
+            </div>
+            <div class="author-info">
+              <div class="author-name">Emily Rodriguez</div>
+              <div class="author-title">Sales Manager, GrowthCo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section class="cta-section" id="get-started">
-    <h3>Join 10,000+ Digital Pros</h3>
-    <p>LeadBaseAI is the fastest way to extract and use leads from social platforms. No setup. No waiting.</p>
-    <a href="../login/index.html" class="cta"><span>Start for Free</span></a>
+    <div class="container">
+      <div class="cta-content">
+        <div class="cta-text">
+          <h3>Ready to Transform Your Lead Generation?</h3>
+          <p>Join 10,000+ professionals who trust LeadBaseAI for their lead generation needs. Start your free trial today and see the difference quality leads can make.</p>
+
+          <div class="cta-benefits">
+            <div class="benefit">
+              <i class="fas fa-check"></i>
+              <span>Free 7-day trial</span>
+            </div>
+            <div class="benefit">
+              <i class="fas fa-check"></i>
+              <span>No credit card required</span>
+            </div>
+            <div class="benefit">
+              <i class="fas fa-check"></i>
+              <span>Cancel anytime</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-actions">
+          <a href="login/index.html" class="cta-primary large">
+            <i class="fas fa-rocket"></i>
+            <span>Start Free Trial</span>
+          </a>
+          <div class="cta-note">
+            <i class="fas fa-shield-alt"></i>
+            <span>30-day money-back guarantee</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <footer class="modern-footer">
-    <div class="footer-content">
-      <p>&copy; 2025 LeadSparkAI. All rights reserved.</p>
-      <div class="footer-links">
-        <a href="mailto:support@leadbaseai.in"><i class="fas fa-envelope"></i> support@leadbaseai.in</a>
-        <a href="tel:+918766334584"><i class="fas fa-phone"></i> +91 87663 34584</a>
-        <a href="https://www.instagram.com/leadbaseai/" target="_blank"><i class="fab fa-instagram"></i> @leadbaseai</a>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-main">
+          <div class="footer-brand">
+            <h4><i class="fas fa-chart-line"></i> LeadBaseAI</h4>
+            <p>Professional lead generation platform trusted by 10,000+ businesses worldwide.</p>
+            <div class="social-links">
+              <a href="https://www.instagram.com/leadbaseai/" target="_blank" aria-label="Instagram">
+                <i class="fab fa-instagram"></i>
+              </a>
+              <a href="#" target="_blank" aria-label="LinkedIn">
+                <i class="fab fa-linkedin"></i>
+              </a>
+              <a href="#" target="_blank" aria-label="Twitter">
+                <i class="fab fa-twitter"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-links">
+            <div class="footer-column">
+              <h5>Product</h5>
+              <a href="#features">Features</a>
+              <a href="#how">How It Works</a>
+              <a href="login/index.html">Get Started</a>
+              <a href="#">Pricing</a>
+            </div>
+
+            <div class="footer-column">
+              <h5>Support</h5>
+              <a href="#">Help Center</a>
+              <a href="#">Documentation</a>
+              <a href="#">API Reference</a>
+              <a href="#">Status</a>
+            </div>
+
+            <div class="footer-column">
+              <h5>Contact</h5>
+              <a href="mailto:support@leadbaseai.in">
+                <i class="fas fa-envelope"></i>
+                support@leadbaseai.in
+              </a>
+              <a href="tel:+918766334584">
+                <i class="fas fa-phone"></i>
+                +91 87663 34584
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div class="footer-legal">
+            <p>&copy; 2025 LeadBaseAI. All rights reserved.</p>
+            <div class="legal-links">
+              <a href="#">Privacy Policy</a>
+              <a href="#">Terms of Service</a>
+              <a href="#">Cookie Policy</a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
